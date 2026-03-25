@@ -1,0 +1,95 @@
+[meta]
+id = "revenue-by-cohort"
+title = "Revenue by Acquisition Cohort"
+mode = "coding"
+language = "sql"
+tags = ["analytics", "cohort-analysis", "window-functions", "aggregation"]
+
+[setup]
+sql = """
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY,
+    acquired_at DATE NOT NULL,
+    acquisition_channel TEXT
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    order_id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    order_date DATE NOT NULL,
+    revenue DECIMAL(10, 2) NOT NULL
+);
+
+INSERT INTO users VALUES
+    (1, '2023-01-15', 'organic'),
+    (2, '2023-01-20', 'paid'),
+    (3, '2023-02-05', 'organic'),
+    (4, '2023-02-18', 'referral'),
+    (5, '2023-03-01', 'paid');
+
+INSERT INTO orders VALUES
+    (1, 1, '2023-01-15', 50.00),
+    (2, 1, '2023-02-10', 75.00),
+    (3, 2, '2023-01-22', 120.00),
+    (4, 3, '2023-02-06', 30.00),
+    (5, 3, '2023-03-15', 45.00),
+    (6, 4, '2023-02-20', 200.00),
+    (7, 5, '2023-03-05', 90.00),
+    (8, 1, '2023-03-20', 60.00);
+"""
+
+[levels.mid]
+estimated_minutes = 20
+interviewer = """You are interviewing a mid-level data analyst on SQL cohort analysis.
+Ask: 'Using the users and orders tables, write a query that shows total revenue per acquisition cohort (month acquired) for each month of activity. The cohort is the month the user was first acquired.'
+Walk them through the expected output format: cohort_month | activity_month | total_revenue."""
+must_cover = ["cohort definition via DATE_TRUNC or strftime", "JOIN between users and orders", "GROUP BY cohort and activity month"]
+follow_ups = [
+    "How would you compute cumulative revenue per cohort?",
+    "How would you show this as a cohort retention matrix?",
+    "What index would you add to make this query faster?",
+]
+
+[levels.senior]
+estimated_minutes = 30
+interviewer = """You are interviewing a senior analyst. Build on the cohort analysis.
+Ask: 'Write a query that shows, for each acquisition cohort, the number of users retained and revenue generated in each subsequent month after acquisition (month 0, month 1, month 2, etc). Include cohort size.'
+Expect window functions, date arithmetic, and clean column naming."""
+must_cover = ["months_since_acquisition calculation", "cohort size", "retained user count", "window functions or subqueries"]
+follow_ups = [
+    "How do you define 'retained' — any order, or specific behavior?",
+    "How would you normalize revenue by cohort size?",
+    "How would you pivot this into a matrix format in SQL?",
+    "How does this query scale with 10M users?",
+]
+
+[levels.staff]
+estimated_minutes = 40
+interviewer = """You are interviewing a staff engineer on analytics platform design.
+Ask: 'We want to build a self-serve cohort analysis feature for our business team. They need to define their own cohort criteria (e.g., users who made a purchase in a given month, or who used a specific feature), then see retention and revenue curves. How would you design both the SQL layer and the product?'
+Push on parameterization, performance, and the gap between what SQL can do and what product needs."""
+must_cover = ["parameterized cohort definition", "pre-aggregation or materialized views", "query performance at scale", "product-layer considerations", "edge cases in cohort assignment"]
+follow_ups = [
+    "How do you handle a user who could belong to multiple cohorts?",
+    "What's your strategy for making this fast enough for interactive use?",
+    "How would you expose this to non-SQL users?",
+    "How do you validate that the cohort query returns correct results?",
+]
+
+[[test_cases]]
+input = "Query: total revenue per acquisition cohort month, grouped by activity month"
+expected_columns = ["cohort_month", "activity_month", "total_revenue"]
+expected_note = "Jan 2023 cohort should show revenue in Jan, Feb, and Mar from users 1 and 2"
+hidden = false
+
+[[test_cases]]
+input = "Query: cohort size (distinct users acquired per cohort month)"
+expected_columns = ["cohort_month", "cohort_size"]
+expected_rows = [["2023-01", 2], ["2023-02", 2], ["2023-03", 1]]
+hidden = false
+
+[[test_cases]]
+input = "Query: cumulative revenue per cohort month as of each activity month"
+expected_columns = ["cohort_month", "activity_month", "cumulative_revenue"]
+expected_note = "Cumulative revenue should be non-decreasing within each cohort"
+hidden = true

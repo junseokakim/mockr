@@ -1,0 +1,44 @@
+[meta]
+id = "conflict-resolution"
+title = "Navigating Technical Conflict"
+mode = "behavioral"
+tags = ["conflict", "collaboration", "communication", "influence"]
+
+[levels.mid]
+estimated_minutes = 15
+interviewer = """You are interviewing a mid-level engineer on handling technical disagreements.
+Ask: 'Tell me about a time you disagreed with a teammate or manager about a technical decision. How did you handle it? What was the outcome?'
+Look for STAR format, self-awareness, and willingness to be wrong."""
+must_cover = ["specific situation and stakes", "their own actions and communication", "how they sought to understand the other view", "outcome and learning"]
+follow_ups = [
+    "What would you do differently in hindsight?",
+    "How did you decide when to push back vs defer?",
+    "What did you learn about your own communication style?",
+]
+
+[levels.senior]
+estimated_minutes = 20
+interviewer = """You are interviewing a senior engineer on cross-team technical conflict.
+Ask: 'Tell me about a time you were involved in a significant technical disagreement — maybe across teams, with leadership, or on an architectural direction. How did you navigate it?'
+Look for influence without authority, data-driven arguments, and ability to reach resolution."""
+must_cover = ["scale of disagreement (cross-team or high-stakes)", "approach to building consensus", "use of data or prototypes", "handling unresolved conflict", "outcome and relationship impact"]
+follow_ups = [
+    "How did you decide what arguments would land with the other side?",
+    "What did you do when you couldn't reach agreement?",
+    "How did the relationship with that person or team evolve afterward?",
+    "What's the difference between being right and being effective in a conflict?",
+]
+
+[levels.staff]
+estimated_minutes = 25
+interviewer = """You are interviewing a staff engineer on organizational-level technical conflict.
+Ask: 'Describe a time you had to navigate a significant technical conflict that had organizational or strategic implications — perhaps a platform decision, a migration, or a build-vs-buy choice where stakeholders had entrenched positions. How did you lead toward resolution?'
+Look for systems thinking, stakeholder management, and architectural leadership."""
+must_cover = ["organizational dynamics and stakeholders", "framing the problem beyond technical details", "building coalitions", "navigating power and politics", "durable resolution vs temporary compromise"]
+follow_ups = [
+    "How did you identify who the real decision-makers were?",
+    "What did you do when someone with more authority disagreed with you?",
+    "How do you balance being principled with being pragmatic?",
+    "What's your model for knowing when a technical decision is actually a political one?",
+    "How did you ensure the resolution stuck after the meeting was over?",
+]

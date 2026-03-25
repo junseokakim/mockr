@@ -1,0 +1,35 @@
+[meta]
+id = "event-driven-data-lake"
+title = "Design an Event-Driven Data Lake"
+mode = "system-design"
+tags = ["data-engineering", "event-streaming", "data-lake", "analytics", "kafka"]
+
+[levels.senior]
+estimated_minutes = 35
+interviewer = """You are interviewing a senior engineer. Ask them to design an event-driven data lake.
+Start with: 'Design a data ingestion pipeline that consumes events from Kafka, stores them durably, and makes them available for both real-time analytics and batch processing. We produce about 5 billion events per day.'
+Explore storage format, partitioning, and serving layer choices."""
+must_cover = ["event streaming ingestion", "storage format (Parquet/ORC)", "partitioning strategy", "schema evolution", "batch vs streaming query paths"]
+follow_ups = [
+    "How do you handle late-arriving events?",
+    "What file format would you use and why?",
+    "How do you partition data for efficient queries?",
+    "How do you handle schema changes in your events?",
+    "Walk me through how an analyst would query last month's data.",
+]
+
+[levels.staff]
+estimated_minutes = 50
+interviewer = """You are interviewing a staff engineer on data lake architecture.
+Start with: 'Design the next-generation data platform for our company. We have 10 engineering teams producing events, a data science team that needs ML feature stores, analysts who write SQL, and compliance requirements for GDPR right-to-erasure. The current system is a mess of ad-hoc pipelines. How do you rethink it?'
+Push on governance, self-service, cost management, and organizational alignment."""
+must_cover = ["data catalog and discovery", "schema registry", "data quality and lineage", "GDPR/erasure support", "cost optimization", "self-service access patterns", "table format (Delta/Iceberg/Hudi)"]
+follow_ups = [
+    "How do you implement GDPR right-to-erasure in an immutable event store?",
+    "How do you enforce data quality without blocking producers?",
+    "What's your strategy for data catalog adoption across teams?",
+    "How do you handle cost attribution for storage and compute?",
+    "How do you design the access control model across teams and sensitivity tiers?",
+    "What does your data contract enforcement look like?",
+    "How do you support both streaming and batch consumers from the same store?",
+]

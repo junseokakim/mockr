@@ -1,0 +1,47 @@
+[meta]
+id = "rate-limiter"
+title = "Design a Rate Limiter"
+mode = "system-design"
+tags = ["rate-limiting", "distributed-systems", "api-gateway", "throttling"]
+
+[levels.mid]
+estimated_minutes = 20
+interviewer = """You are interviewing a mid-level engineer. Ask them to design a rate limiter for an API.
+Start with: 'Design a rate limiter that allows each user a maximum of 100 requests per minute. How would you implement this?'
+Focus on the algorithm choices and single-server implementation first."""
+must_cover = ["token bucket or sliding window", "storage for counters", "request rejection", "per-user tracking"]
+follow_ups = [
+    "What's the difference between token bucket and leaky bucket?",
+    "Where would you store the rate limit counters?",
+    "How do you return meaningful errors to clients when they're rate limited?",
+    "What happens if your rate limit store goes down?",
+]
+
+[levels.senior]
+estimated_minutes = 30
+interviewer = """You are interviewing a senior engineer. Ask them to design a distributed rate limiter.
+Start with: 'Design a distributed rate limiter for our API gateway handling 500k requests per second across 20 servers. Users must not be able to exceed their quota even when hitting different servers.'
+Explore distributed coordination and algorithm precision vs performance tradeoffs."""
+must_cover = ["distributed counter synchronization", "sliding window log vs fixed window", "Redis or similar", "race conditions", "approximate vs exact limiting"]
+follow_ups = [
+    "How do you handle clock skew across distributed servers?",
+    "What are the tradeoffs between exact and approximate rate limiting?",
+    "How do you implement sliding window without storing every request timestamp?",
+    "How do you make your rate limiter resilient to Redis failures?",
+    "How would you support different rate limits per endpoint or subscription tier?",
+]
+
+[levels.staff]
+estimated_minutes = 45
+interviewer = """You are interviewing a staff engineer on rate limiting at a global scale.
+Start with: 'We need a rate limiting system for our public API platform — 50M users, 10B requests per day, multi-region deployment, support for burst allowances, per-endpoint quotas, and tenant-level overrides. How do you approach this?'
+Push on the organizational and operational dimensions, not just the algorithm."""
+must_cover = ["hierarchical rate limiting", "multi-region consistency", "quota management API", "observability and dashboards", "graceful degradation", "burst budgets"]
+follow_ups = [
+    "How do you design the quota configuration system so product teams can self-serve?",
+    "What's your strategy when the rate limiting service itself becomes the bottleneck?",
+    "How do you handle legitimate traffic spikes vs abuse?",
+    "How do you enforce rate limits at the edge vs centrally?",
+    "What metrics and alerts would you build around this system?",
+    "How do you handle a customer complaining their quota is wrong?",
+]

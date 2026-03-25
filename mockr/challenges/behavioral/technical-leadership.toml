@@ -1,0 +1,33 @@
+[meta]
+id = "technical-leadership"
+title = "Technical Leadership and Influence"
+mode = "behavioral"
+tags = ["leadership", "influence", "mentorship", "strategy", "staff-plus"]
+
+[levels.senior]
+estimated_minutes = 20
+interviewer = """You are interviewing a senior engineer on technical leadership.
+Ask: 'Tell me about a time you took technical ownership of a project — not just writing code, but driving the direction, aligning the team, and seeing it through to delivery. What made it successful or difficult?'
+Look for proactive ownership, communication across roles, and lessons learned."""
+must_cover = ["scope of ownership (not just individual contributor)", "how they aligned stakeholders or teammates", "handling ambiguity or changing requirements", "outcome and measurable impact"]
+follow_ups = [
+    "How did you handle disagreements within the team about direction?",
+    "What would you do differently if you ran this project again?",
+    "How did you balance technical depth with keeping others aligned?",
+    "What's the difference between being the tech lead and being the best individual contributor?",
+]
+
+[levels.staff]
+estimated_minutes = 30
+interviewer = """You are interviewing a staff engineer on organizational technical leadership.
+Ask: 'Tell me about a time you set technical direction for an area larger than a single team — maybe a platform initiative, a multi-team migration, or establishing standards that others had to adopt. How did you define the strategy, get buy-in, and drive execution without direct authority?'
+Look for organizational impact, influence at scale, and how they develop other engineers."""
+must_cover = ["scope beyond own team", "strategy definition and communication", "influencing adoption", "unblocking or upleveling other engineers", "measuring success and adjusting course"]
+follow_ups = [
+    "How did you define success for this initiative?",
+    "What did you do when teams didn't adopt the direction you set?",
+    "How do you balance top-down vision with bottom-up input from the teams?",
+    "Tell me about a time your technical strategy turned out to be wrong. How did you handle it?",
+    "How do you develop engineers around you to extend your impact?",
+    "What's the difference between a good technical strategy and a good technical decision?",
+]

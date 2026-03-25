@@ -1,0 +1,58 @@
+[meta]
+id = "two-sum"
+title = "Two Sum"
+mode = "coding"
+language = "python"
+tags = ["arrays", "hash-map", "searching"]
+
+[levels.mid]
+estimated_minutes = 20
+interviewer = """You are interviewing a mid-level engineer on a classic array problem.
+Present this problem: 'Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`. You may assume exactly one solution exists, and you may not use the same element twice.'
+Example: nums = [2, 7, 11, 15], target = 9 → [0, 1]
+Ask them to start with brute force then optimize."""
+must_cover = ["hash map O(n) solution", "index tracking", "single-pass approach"]
+follow_ups = [
+    "What's the time complexity of your brute-force approach?",
+    "Can you do it in O(n) time?",
+    "What if there were multiple valid answers?",
+    "What if the array were sorted — could you do better?",
+]
+
+[levels.senior]
+estimated_minutes = 25
+interviewer = """You are interviewing a senior engineer. Present the Two Sum problem with additional constraints.
+'Given an array of integers and a target, return all unique pairs of indices whose values sum to the target. The array may have duplicates. Optimize for both time and space.'
+Expect discussion of edge cases, duplicate handling, and clean code structure."""
+must_cover = ["hash map approach", "duplicate pair handling", "edge cases (empty, single element)", "clean code and naming"]
+follow_ups = [
+    "How do you handle duplicate values in the array?",
+    "What's the space complexity tradeoff?",
+    "How would you adapt this for a stream of integers?",
+    "How would you write tests for this function?",
+]
+
+[[test_cases]]
+input = "nums = [2, 7, 11, 15]; target = 9"
+expected = "[0, 1]"
+hidden = false
+
+[[test_cases]]
+input = "nums = [3, 2, 4]; target = 6"
+expected = "[1, 2]"
+hidden = false
+
+[[test_cases]]
+input = "nums = [3, 3]; target = 6"
+expected = "[0, 1]"
+hidden = false
+
+[[test_cases]]
+input = "nums = [1, 2, 3, 4, 5]; target = 9"
+expected = "[3, 4]"
+hidden = true
+
+[[test_cases]]
+input = "nums = [-1, -2, -3, -4, -5]; target = -8"
+expected = "[2, 4]"
+hidden = true

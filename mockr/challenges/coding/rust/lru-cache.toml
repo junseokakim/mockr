@@ -1,0 +1,94 @@
+[meta]
+id = "lru-cache-rust"
+title = "LRU Cache in Rust"
+mode = "coding"
+language = "rust"
+tags = ["data-structures", "lru", "hash-map", "linked-list", "ownership"]
+
+[levels.senior]
+estimated_minutes = 35
+interviewer = """You are interviewing a senior Rust engineer.
+Ask: 'Implement an LRU (Least Recently Used) cache in Rust with O(1) get and put operations. The cache has a fixed capacity. When capacity is exceeded, evict the least recently used entry.
+The interface should be:
+  fn new(capacity: usize) -> Self
+  fn get(&mut self, key: i32) -> Option<i32>
+  fn put(&mut self, key: i32, value: i32)
+Think about what data structures you need and how Rust ownership affects your design choices.'"""
+must_cover = ["HashMap for O(1) lookup", "doubly linked list or equivalent for O(1) eviction order", "ownership model discussion", "capacity enforcement"]
+follow_ups = [
+    "Why is a doubly linked list tricky in safe Rust?",
+    "How would you implement this without unsafe code?",
+    "What alternatives to a linked list work well in Rust?",
+    "How does your solution handle thread safety?",
+    "What's the memory layout of your data structure?",
+]
+
+[levels.staff]
+estimated_minutes = 50
+interviewer = """You are interviewing a staff Rust engineer on systems design and Rust internals.
+Ask: 'Design a production-grade LRU cache library in Rust. It should support generic key/value types, configurable eviction policies (LRU, LFU, or custom), thread-safe access, TTL expiry, and metrics (hit rate, eviction count). How do you design the API and internals?'
+Push on API ergonomics, trait design, and performance characteristics."""
+must_cover = ["generic types with trait bounds", "trait-based eviction policy", "Arc/Mutex or RwLock for thread safety", "TTL implementation", "metrics collection", "API design and ergonomics"]
+follow_ups = [
+    "How do you design the eviction policy as a pluggable trait?",
+    "What are the tradeoffs between Mutex and RwLock for this workload?",
+    "How do you implement TTL without a background thread?",
+    "How would you benchmark your cache implementation?",
+    "How do you avoid lock contention at high concurrency?",
+    "What would a builder pattern API look like for this cache?",
+]
+
+[[test_cases]]
+input = """
+let mut cache = LRUCache::new(2);
+cache.put(1, 1);
+cache.put(2, 2);
+cache.get(1)
+"""
+expected = "Some(1)"
+hidden = false
+
+[[test_cases]]
+input = """
+let mut cache = LRUCache::new(2);
+cache.put(1, 1);
+cache.put(2, 2);
+cache.put(3, 3);
+cache.get(2)
+"""
+expected = "Some(2)"
+hidden = false
+
+[[test_cases]]
+input = """
+let mut cache = LRUCache::new(2);
+cache.put(1, 1);
+cache.put(2, 2);
+cache.put(3, 3);
+cache.get(1)
+"""
+expected = "None"
+hidden = false
+
+[[test_cases]]
+input = """
+let mut cache = LRUCache::new(1);
+cache.put(1, 1);
+cache.put(1, 10);
+cache.get(1)
+"""
+expected = "Some(10)"
+hidden = true
+
+[[test_cases]]
+input = """
+let mut cache = LRUCache::new(2);
+cache.put(2, 1);
+cache.put(1, 1);
+cache.get(2);
+cache.put(4, 1);
+cache.get(1);
+cache.get(2)
+"""
+expected = "Some(1)"
+hidden = true

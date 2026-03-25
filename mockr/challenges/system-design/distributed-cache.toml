@@ -1,0 +1,47 @@
+[meta]
+id = "distributed-cache"
+title = "Design a Distributed Cache"
+mode = "system-design"
+tags = ["caching", "distributed-systems", "consistency", "eviction"]
+
+[levels.mid]
+estimated_minutes = 20
+interviewer = """You are interviewing a mid-level engineer. Ask them to design a distributed in-memory cache (like Memcached or Redis).
+Start with: 'Design a distributed cache that supports get/set/delete operations with TTL. The system should handle 100k requests per second.'
+Focus on basic cache operations, TTL, and single-node design before scaling."""
+must_cover = ["TTL expiry", "eviction policy", "LRU or LFU", "key hashing"]
+follow_ups = [
+    "How do you handle cache misses?",
+    "What eviction policy would you use and why?",
+    "How do you expire keys efficiently?",
+    "What data structures back your cache?",
+]
+
+[levels.senior]
+estimated_minutes = 30
+interviewer = """You are interviewing a senior engineer. Ask them to design a distributed cache at scale.
+Start with: 'Design a distributed cache cluster supporting 1M requests per second with 99.9% availability. Walk me through your architecture.'
+Expect discussion of consistent hashing, replication, and failure handling."""
+must_cover = ["consistent hashing", "replication", "eviction policy", "cache invalidation", "failure handling"]
+follow_ups = [
+    "How do you handle hot keys?",
+    "What's your replication strategy — sync or async?",
+    "How do you handle cache stampedes?",
+    "Walk me through what happens when a cache node fails.",
+    "How would you handle cache coherence across regions?",
+]
+
+[levels.staff]
+estimated_minutes = 45
+interviewer = """You are interviewing a staff engineer. Ask them to design a globally distributed cache with strong consistency guarantees.
+Start with: 'Design a globally distributed cache used by our ad-serving platform. We need sub-millisecond p99 reads, strong consistency for financial data, and multi-region support. What are the fundamental tradeoffs?'
+Push on CAP theorem, cross-region consistency, and operational complexity."""
+must_cover = ["CAP theorem tradeoffs", "consistency models", "cross-region replication", "write-through vs write-behind", "observability", "cache warming"]
+follow_ups = [
+    "When would you choose eventual consistency over strong consistency?",
+    "How do you handle cross-region cache invalidation?",
+    "What's your strategy for cache warming after a cold start?",
+    "How do you detect and mitigate thundering herd at the infrastructure level?",
+    "How would you design the monitoring and alerting for this system?",
+    "What's the blast radius if the cache layer goes down completely?",
+]
