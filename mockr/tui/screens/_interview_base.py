@@ -11,7 +11,6 @@ from mockr.core.events import DebriefReady, EventBus
 from mockr.core.scoring.scorer import Scorer
 from mockr.core.sessions.orchestrator import TurnOrchestrator
 from mockr.core.sessions.session import Session
-from mockr.core.types import ModelConfig
 from mockr.tui.widgets.timer import TimerWidget
 
 
@@ -21,13 +20,11 @@ def _build_orchestrator(
     bus: EventBus,
     mode_override: str | None = None,
 ) -> TurnOrchestrator:
-    """Construct a TurnOrchestrator with FakeLLMBackend and Scorer."""
-    from mockr.core.llm.fake_backend import FakeLLMBackend
+    """Construct a TurnOrchestrator with configured LLM backend and Scorer."""
+    from mockr.core.llm.factory import build_backend
 
-    mode = mode_override or session.mode.value
-    backend = FakeLLMBackend(mode=mode)
+    backend, config = build_backend()
     scorer = Scorer()
-    config = ModelConfig(model="fake", temperature=0.7, max_tokens=1024)
 
     challenge_context = ""
     must_cover: list[str] = []

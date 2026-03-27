@@ -139,8 +139,8 @@ class AssessmentScreen(Screen):
 
     async def _start_mode(self) -> None:
         from mockr.core.challenges.loader import load_challenges_from_dir
-        from mockr.core.llm.fake_backend import FakeLLMBackend
-        from mockr.core.types import Message, ModelConfig
+        from mockr.core.llm.factory import build_backend
+        from mockr.core.types import Message
 
         if self._current_mode_idx >= len(_MODES):
             return
@@ -149,8 +149,7 @@ class AssessmentScreen(Screen):
         status = self.query_one("#assess-status", Static)
         status.update(f"Starting {mode} assessment...")
 
-        backend = FakeLLMBackend()
-        config = ModelConfig(model="fake", temperature=0.7, max_tokens=1024)
+        backend, config = build_backend()
 
         challenges = load_challenges_from_dir(_CHALLENGES_DIR)
         challenge = next((c for c in challenges if c.mode == mode), None)
@@ -205,14 +204,12 @@ class AssessmentScreen(Screen):
 
     async def _run_assessment(self) -> None:
         from mockr.core.assessment.engine import AssessmentEngine
-        from mockr.core.llm.fake_backend import FakeLLMBackend
-        from mockr.core.types import ModelConfig
+        from mockr.core.llm.factory import build_backend
 
         status = self.query_one("#assess-status", Static)
         status.update("Scoring all responses...")
 
-        backend = FakeLLMBackend()
-        config = ModelConfig(model="fake", temperature=0.7, max_tokens=1024)
+        backend, config = build_backend()
 
         engine = AssessmentEngine(
             backend=backend,

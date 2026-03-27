@@ -123,11 +123,9 @@ class PrepScreen(Screen):
 
     async def _parse(self, jd_text: str) -> None:
         from mockr.core.jd.parser import JDParser
-        from mockr.core.llm.fake_backend import FakeLLMBackend
-        from mockr.core.types import ModelConfig
+        from mockr.core.llm.factory import build_backend
 
-        backend = FakeLLMBackend()
-        config = ModelConfig(model="fake", temperature=0.7, max_tokens=1024)
+        backend, config = build_backend()
         parser = JDParser(backend=backend, config=config)
 
         profile = await parser.parse_text(jd_text)
