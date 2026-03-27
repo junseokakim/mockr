@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import random
 
 from textual.screen import Screen
 from textual.widgets import Static
@@ -65,6 +66,20 @@ class BaseInterviewScreen(Screen):
 
     def _set_status(self, msg: str) -> None:
         self.query_one("#status-bar", Static).update(f"  {msg}" if msg else "")
+
+    # ── Hints ─────────────────────────────────────────────────────────────────
+
+    def _resolve_hint(self) -> str:
+        """Return a hint from challenge follow_ups or the subclass default."""
+        if self._challenge:
+            level_cfg = self._challenge.levels.get(self._session.level.value)
+            if level_cfg and level_cfg.follow_ups:
+                return random.choice(level_cfg.follow_ups)
+        return self._default_hint()
+
+    def _default_hint(self) -> str:
+        """Override in subclass to provide mode-specific fallback hints."""
+        return "Think about your approach from multiple angles."
 
     # ── Shared lifecycle ─────────────────────────────────────────────────────
 

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -230,34 +229,64 @@ class CodingInterviewScreen(BaseInterviewScreen):
             )
 
         if self._language == "python":
-            test_code = "\n".join(
-                f"assert str({tc.input}) == {repr(tc.expected)}, "
-                f"f'Case {i}: expected {repr(tc.expected)}, got {{str({tc.input})}}'"
-                for i, tc in enumerate(self._challenge.test_cases)
+            visible = [
+                (i, tc) for i, tc in enumerate(self._challenge.test_cases)
                 if not tc.hidden and tc.input
-            )
-            result = await self._engine.run_python(code, test_code)
-            test_details = [
-                TestResult(
-                    case_index=i,
-                    passed=tr.passed,
-                    expected=tr.expected or "",
-                    actual=tr.actual or "",
-                    hidden=False,
-                )
-                for i, tr in enumerate(result.test_results or [])
             ]
+            # Wrap each case in try/except so all run independently
+            lines = ["_mockr_results = []"]
+            for i, tc in visible:
+                lines.append("try:")
+                lines.append(f"    _actual = str({tc.input})")
+                lines.append(f"    _mockr_results.append((_actual == {repr(tc.expected)}, {repr(tc.expected)}, _actual))")
+                lines.append("except Exception as _e:")
+                lines.append(f"    _mockr_results.append((False, {repr(tc.expected)}, str(_e)))")
+            lines.append("import json as _j, sys as _s")
+            lines.append("print('MOCKR_RESULTS:' + _j.dumps(_mockr_results))")
+            lines.append("_s.exit(0 if all(r[0] for r in _mockr_results) else 1)")
+
+            result = await self._engine.run_python(code, "\n".join(lines))
+            total = len(visible)
+            details: list[TestResult] = []
+            passed = 0
+
+            # Parse per-case results from stdout
+            for line in (result.stdout or "").splitlines():
+                if line.startswith("MOCKR_RESULTS:"):
+                    try:
+                        import json
+                        parsed = json.loads(line[len("MOCKR_RESULTS:"):])
+                        for idx, (ok, expected, actual) in enumerate(parsed):
+                            passed += int(ok)
+                            details.append(TestResult(
+                                case_index=idx, passed=ok,
+                                expected=expected, actual=actual, hidden=False,
+                            ))
+                    except (ValueError, IndexError):
+                        pass
+                    break
+
+            if not details:
+                # Fallback if parsing failed
+                passed = total if result.exit_code == 0 else 0
+                for idx, (_, tc) in enumerate(visible):
+                    details.append(TestResult(
+                        case_index=idx, passed=result.exit_code == 0,
+                        expected=tc.expected, actual="pass" if result.exit_code == 0 else "see stderr",
+                        hidden=False,
+                    ))
+
             return ExecutionResult(
                 session_id=self._session.id,
                 language=self._language,
-                passed=result.tests_passed,
-                failed=result.tests_failed,
-                total=result.tests_passed + result.tests_failed,
-                test_details=test_details,
+                passed=passed,
+                failed=total - passed,
+                total=total,
+                test_details=details,
                 stdout=result.stdout or "",
                 stderr=result.stderr or "",
                 exit_code=result.exit_code,
-                execution_time_ms=int(result.execution_time_ms or 0),
+                execution_time_ms=result.execution_time_ms,
             )
 
         if self._language == "sql" and self._challenge.setup_sql:
@@ -279,7 +308,7 @@ class CodingInterviewScreen(BaseInterviewScreen):
                 test_details=[TestResult(
                     case_index=0,
                     passed=result.passed,
-                    expected=str(result.expected_rows),
+                    expected=str(tc.expected_rows),
                     actual=str(result.actual_rows),
                     hidden=False,
                 )],
@@ -311,15 +340,11 @@ class CodingInterviewScreen(BaseInterviewScreen):
     def action_request_hint(self) -> None:
         self.run_worker(self._fetch_hint(), exclusive=False)
 
+    def _default_hint(self) -> str:
+        return "Think about edge cases \u2014 empty input, single element, duplicates."
+
     async def _fetch_hint(self) -> None:
         self._set_status("Fetching hint\u2026")
         await asyncio.sleep(0.3)
-        coach = self.query_one("#coach-text", Static)
-        if self._challenge and self._challenge.levels.get(self._session.level.value):
-            follow_ups = self._challenge.levels[self._session.level.value].follow_ups
-            if follow_ups:
-                coach.update(f"Coach: {random.choice(follow_ups)}")
-                self._set_status("")
-                return
-        coach.update("Coach: Think about edge cases \u2014 empty input, single element, duplicates.")
+        self.query_one("#coach-text", Static).update(f"Coach: {self._resolve_hint()}")
         self._set_status("")

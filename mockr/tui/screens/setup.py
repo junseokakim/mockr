@@ -23,20 +23,20 @@ from mockr.core.challenges.loader import load_challenges_from_dir
 from mockr.core.types import Level, Mode
 
 # Default challenges directory; real CLI entry can override.
-_DEFAULT_CHALLENGES_DIR = Path(__file__).parent.parent.parent.parent / "challenges"
+_DEFAULT_CHALLENGES_DIR = Path(__file__).parent.parent.parent / "challenges"
 
 _MODE_OPTIONS = [
-    ("System Design", Mode.SYSTEM_DESIGN.value),
-    ("Coding", Mode.CODING.value),
-    ("Behavioral", Mode.BEHAVIORAL.value),
-    ("Full Loop", Mode.FULL_LOOP.value),
+    ("System Design", Mode.SYSTEM_DESIGN),
+    ("Coding", Mode.CODING),
+    ("Behavioral", Mode.BEHAVIORAL),
+    ("Full Loop", Mode.FULL_LOOP),
 ]
 
 _LEVEL_OPTIONS = [
-    ("Mid", Level.MID.value),
-    ("Senior", Level.SENIOR.value),
-    ("Staff", Level.STAFF.value),
-    ("Principal", Level.PRINCIPAL.value),
+    ("Mid", Level.MID),
+    ("Senior", Level.SENIOR),
+    ("Staff", Level.STAFF),
+    ("Principal", Level.PRINCIPAL),
 ]
 
 _LANGUAGE_OPTIONS = [
@@ -121,8 +121,8 @@ class SetupScreen(Screen):
     def __init__(self, practice_mode: bool = False) -> None:
         super().__init__()
         self._practice_mode = practice_mode
-        self._selected_mode = Mode.SYSTEM_DESIGN.value
-        self._selected_level = Level.SENIOR.value
+        self._selected_mode = Mode.SYSTEM_DESIGN
+        self._selected_level = Level.SENIOR
         self._selected_language = "python"
         self._selected_challenge: str | None = None
         self._challenges: list = []
@@ -135,12 +135,12 @@ class SetupScreen(Screen):
             yield Label("Mode", classes="section-label")
             with RadioSet(id="mode-select"):
                 for label, value in _MODE_OPTIONS:
-                    yield RadioButton(label, value=(value == Mode.SYSTEM_DESIGN.value))
+                    yield RadioButton(label, value=(value == Mode.SYSTEM_DESIGN))
 
             yield Label("Level", classes="section-label")
             with RadioSet(id="level-select"):
                 for label, value in _LEVEL_OPTIONS:
-                    yield RadioButton(label, value=(value == Level.SENIOR.value))
+                    yield RadioButton(label, value=(value == Level.SENIOR))
 
             with Vertical(id="language-section"):
                 yield Label("Language", classes="section-label")
@@ -190,7 +190,7 @@ class SetupScreen(Screen):
         if radio_set.id == "mode-select":
             self._selected_mode = _MODE_OPTIONS[idx][1]
             lang_section = self.query_one("#language-section", Vertical)
-            if self._selected_mode == Mode.CODING.value:
+            if self._selected_mode == Mode.CODING:
                 lang_section.add_class("visible")
             else:
                 lang_section.remove_class("visible")
@@ -223,12 +223,11 @@ class SetupScreen(Screen):
         """Validate, create session, push the correct interview screen."""
         from mockr.core.events import EventBus
         from mockr.core.sessions.session import Session
-        from mockr.core.types import Level, Mode
 
         status = self.query_one("#status-label", Static)
 
-        mode = Mode(self._selected_mode)
-        level = Level(self._selected_level)
+        mode = self._selected_mode
+        level = self._selected_level
 
         # Resolve challenge
         challenge = None
@@ -239,7 +238,7 @@ class SetupScreen(Screen):
         if challenge is None and self._challenges:
             # Pick a random one matching the mode if available
             import random
-            mode_challenges = [c for c in self._challenges if c.mode == self._selected_mode]
+            mode_challenges = [c for c in self._challenges if c.mode == self._selected_mode.value]
             if mode_challenges:
                 challenge = random.choice(mode_challenges)
             elif self._challenges:
@@ -273,7 +272,7 @@ class SetupScreen(Screen):
                     language=self._selected_language,
                 )
             )
-        elif mode.value == "behavioral":
+        elif mode == Mode.BEHAVIORAL:
             from mockr.tui.screens.interview_behavioral import BehavioralInterviewScreen
             self.app.push_screen(
                 BehavioralInterviewScreen(

@@ -1,10 +1,11 @@
 """Turn orchestrator — the central interview loop."""
 from __future__ import annotations
-import json
+import asyncio
 from mockr.core.events import (AnswerReceived, DebriefReady, EventBus, QuestionReady, ScoreReady)
 from mockr.core.scoring.scorer import Scorer
 from mockr.core.sessions.session import Session
 from mockr.core.types import Message, ModelConfig
+from mockr.core.utils import extract_json_object
 
 
 class TurnOrchestrator:
@@ -38,26 +39,25 @@ class TurnOrchestrator:
             session_id=self._session.id, turn_number=self._session.turn_number,
             answer_text=answer, diagram=diagram,
         ))
-        # Score
         score_prompt = self._scorer.build_scoring_prompt(
             mode=self._session.mode.value, level=self._session.level.value,
             answer=answer, must_cover=self._must_cover, turn_number=self._session.turn_number,
         )
-        score_raw = await self._backend.generate([Message(role="user", content=score_prompt)], self._config)
+        next_q_messages = [
+            Message(role="system", content=self._challenge_context),
+            *self._session.history,
+            Message(role="user", content="Evaluate the last answer and ask the next interview question."),
+        ]
+        score_raw, next_response = await asyncio.gather(
+            self._backend.generate([Message(role="user", content=score_prompt)], self._config),
+            self._backend.generate(next_q_messages, self._config),
+        )
         score_result = self._scorer.parse_score_response(score_raw, mode=self._session.mode.value)
         self._bus.emit(ScoreReady(
             session_id=self._session.id, turn_number=self._session.turn_number,
             dimensions=score_result.dimensions, strengths=score_result.strengths,
             improvements=score_result.improvements,
         ))
-        # Next question
-        history_messages = [Message(role=m.role, content=m.content) for m in self._session.history]
-        next_q_messages = [
-            Message(role="system", content=self._challenge_context),
-            *history_messages,
-            Message(role="user", content="Evaluate the last answer and ask the next interview question."),
-        ]
-        next_response = await self._backend.generate(next_q_messages, self._config)
         self._session.add_assistant_response(next_response)
         interviewer_text = next_response
         coach_text = None
@@ -78,18 +78,16 @@ class TurnOrchestrator:
         )
         messages = [
             Message(role="system", content=self._challenge_context),
-            *[Message(role=m.role, content=m.content) for m in self._session.history],
+            *self._session.history,
             Message(role="user", content=debrief_prompt),
         ]
         raw = await self._backend.generate(messages, self._config)
         try:
-            json_start = raw.find("{")
-            json_end = raw.rfind("}") + 1
-            data = json.loads(raw[json_start:json_end])
+            data = extract_json_object(raw)
             overall = float(data.get("overall_score", 3.0))
             dim_scores = {k: float(v) for k, v in data.get("dimension_scores", {}).items()}
             summary = data.get("summary", raw)
-        except (json.JSONDecodeError, ValueError):
+        except (ValueError, KeyError, TypeError):
             overall, dim_scores, summary = 3.0, {}, raw
         self._bus.emit(DebriefReady(
             session_id=self._session.id, overall_score=overall,

@@ -108,7 +108,6 @@ class BehavioralInterviewScreen(BaseInterviewScreen):
 
     def __init__(self, session: Session, challenge, bus: EventBus, **kwargs) -> None:
         super().__init__(session=session, challenge=challenge, bus=bus, **kwargs)
-        self._turn = 0
 
         bus.subscribe(QuestionReady, self._on_question_ready)
         bus.subscribe(ScoreReady, self._on_score_ready)
@@ -158,7 +157,7 @@ class BehavioralInterviewScreen(BaseInterviewScreen):
         challenge_name = self._challenge.title if self._challenge else "Behavioral"
         level = self._session.level.value.capitalize()
         self.query_one("#top-info", Static).update(
-            f"  Turn {self._turn}  \u00b7  Behavioral  \u00b7  {challenge_name}  \u00b7  {level}"
+            f"  Turn {self._session.turn_number}  \u00b7  Behavioral  \u00b7  {challenge_name}  \u00b7  {level}"
         )
 
     # ── Event handlers ───────────────────────────────────────────────────────
@@ -167,7 +166,6 @@ class BehavioralInterviewScreen(BaseInterviewScreen):
         self.call_from_thread(self._update_question, event)
 
     def _update_question(self, event: QuestionReady) -> None:
-        self._turn = event.turn_number
         self._update_top_info()
         self.query_one("#interviewer-text", Static).update(event.interviewer_text)
         self._set_thinking(False)
@@ -198,7 +196,10 @@ class BehavioralInterviewScreen(BaseInterviewScreen):
     def action_request_hint(self) -> None:
         self.run_worker(self._fetch_hint(), exclusive=False)
 
+    def _default_hint(self) -> str:
+        return random.choice(_BEHAVIORAL_HINTS)
+
     async def _fetch_hint(self) -> None:
         self._set_status("Fetching hint\u2026")
         await asyncio.sleep(0.3)
-        self._set_status(f"Hint: {random.choice(_BEHAVIORAL_HINTS)}")
+        self._set_status(f"Hint: {self._resolve_hint()}")

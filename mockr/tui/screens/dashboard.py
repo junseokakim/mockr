@@ -9,7 +9,7 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Static
 
-_DEFAULT_DB = Path.home() / ".mockr" / "progress.db"
+_DEFAULT_DB = Path.home() / ".mockr" / "mockr.db"
 
 
 class DashboardScreen(Screen):

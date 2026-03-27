@@ -2,16 +2,9 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-if sys.version_info >= (3, 12):
-    import tomllib
-else:
-    try:
-        import tomllib
-    except ModuleNotFoundError:
-        import tomli as tomllib
+from mockr._compat import tomllib
 
 from mockr.core.challenges.models import Challenge, LevelConfig, TestCase
 

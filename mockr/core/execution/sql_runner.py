@@ -21,15 +21,14 @@ class SQLRunner:
         expected_rows: list[list],
         setup_extra: str = "",
     ) -> SQLResult:
+        conn = duckdb.connect(":memory:")
         try:
-            conn = duckdb.connect(":memory:")
             conn.execute(setup_sql)
             if setup_extra:
                 conn.execute(setup_extra)
             result = conn.execute(query)
             columns = [desc[0] for desc in result.description]
             rows = [list(row) for row in result.fetchall()]
-            conn.close()
             actual_sorted = sorted(rows)
             expected_sorted = sorted(expected_rows)
             passed = (
@@ -39,3 +38,5 @@ class SQLRunner:
             return SQLResult(passed=passed, actual_columns=columns, actual_rows=rows)
         except Exception as e:
             return SQLResult(passed=False, actual_columns=[], actual_rows=[], error=str(e))
+        finally:
+            conn.close()

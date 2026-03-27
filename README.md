@@ -1,5 +1,9 @@
 # mockr
 
+[![CI](https://github.com/junseokakim/mockr/actions/workflows/ci.yml/badge.svg)](https://github.com/junseokakim/mockr/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Terminal-native AI mock interview tool with real code execution, system design diagramming, and spaced repetition.
 
 ```
@@ -56,7 +60,7 @@ from mockr.core.sessions.orchestrator import TurnOrchestrator
 
 ```bash
 # Clone and install
-git clone https://github.com/yourusername/mockr.git
+git clone https://github.com/junseokakim/mockr.git
 cd mockr
 python -m venv .venv && source .venv/bin/activate  # or .venv/Scripts/activate on Windows
 pip install -e ".[dev]"
@@ -138,7 +142,7 @@ Validate with: `mockr challenge validate my-challenge.toml`
 ## Tests
 
 ```bash
-pytest tests/ -v    # 85 tests
+pytest tests/ -v
 ```
 
 ## Tech Stack

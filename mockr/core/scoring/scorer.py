@@ -1,7 +1,8 @@
 """LLM-based scoring for interview answers."""
 from __future__ import annotations
-import json
 from dataclasses import dataclass, field
+
+from mockr.core.utils import extract_json_object
 
 DIMENSIONS_BY_MODE: dict[str, list[str]] = {
     "system-design": ["structure", "constraints", "tradeoffs", "reliability", "concreteness"],
@@ -54,12 +55,7 @@ Return ONLY valid JSON in this exact format:
     def parse_score_response(self, raw: str, mode: str) -> ScoreResult:
         dimensions = DIMENSIONS_BY_MODE.get(mode, DIMENSIONS_BY_MODE["system-design"])
         try:
-            json_start = raw.find("{")
-            json_end = raw.rfind("}") + 1
-            if json_start >= 0 and json_end > json_start:
-                data = json.loads(raw[json_start:json_end])
-            else:
-                raise json.JSONDecodeError("No JSON found", raw, 0)
+            data = extract_json_object(raw)
             dim_scores = {}
             raw_dims = data.get("dimensions", {})
             for d in dimensions:
@@ -70,7 +66,7 @@ Return ONLY valid JSON in this exact format:
                 strengths=data.get("strengths", []),
                 improvements=data.get("improvements", []),
             )
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+        except (ValueError, KeyError, TypeError):
             return ScoreResult(
                 dimensions={d: 3.0 for d in dimensions},
                 strengths=[], improvements=["(Scoring failed — using default scores)"],

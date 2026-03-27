@@ -2,17 +2,10 @@
 
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
-if sys.version_info >= (3, 12):
-    import tomllib
-else:
-    try:
-        import tomllib
-    except ModuleNotFoundError:
-        import tomli as tomllib
+from mockr._compat import tomllib
 
 DEFAULT_CONFIG_PATH = Path.home() / ".mockr" / "config.toml"
 
@@ -49,47 +42,20 @@ def load_config(path: Path | None = None) -> MockrConfig:
         raw = tomllib.load(f)
 
     cfg = MockrConfig()
-
     llm = raw.get("llm", {})
-    if "provider" in llm:
-        cfg.provider = llm["provider"]
 
-    profile = raw.get("profile", {})
-    if "level" in profile:
-        cfg.level = profile["level"]
-
-    ollama = llm.get("ollama", {})
-    if "base_url" in ollama:
-        cfg.ollama_base_url = ollama["base_url"]
-    if "model" in ollama:
-        cfg.ollama_model = ollama["model"]
-
-    openai = llm.get("openai", {})
-    if "api_key" in openai:
-        cfg.openai_api_key = openai["api_key"]
-    if "model" in openai:
-        cfg.openai_model = openai["model"]
-
-    anthropic = llm.get("anthropic", {})
-    if "api_key" in anthropic:
-        cfg.anthropic_api_key = anthropic["api_key"]
-    if "model" in anthropic:
-        cfg.anthropic_model = anthropic["model"]
-
-    claude_cli = llm.get("claude-cli", {})
-    if "command" in claude_cli:
-        cfg.claude_cli_command = claude_cli["command"]
-    if "args" in claude_cli:
-        cfg.claude_cli_args = claude_cli["args"]
-    if "timeout" in claude_cli:
-        cfg.claude_cli_timeout = claude_cli["timeout"]
-
-    codex_cli = llm.get("codex-cli", {})
-    if "command" in codex_cli:
-        cfg.codex_cli_command = codex_cli["command"]
-    if "args" in codex_cli:
-        cfg.codex_cli_args = codex_cli["args"]
-    if "timeout" in codex_cli:
-        cfg.codex_cli_timeout = codex_cli["timeout"]
+    _apply(llm, cfg, {"provider": "provider"})
+    _apply(raw.get("profile", {}), cfg, {"level": "level"})
+    _apply(llm.get("ollama", {}), cfg, {"base_url": "ollama_base_url", "model": "ollama_model"})
+    _apply(llm.get("openai", {}), cfg, {"api_key": "openai_api_key", "model": "openai_model"})
+    _apply(llm.get("anthropic", {}), cfg, {"api_key": "anthropic_api_key", "model": "anthropic_model"})
+    _apply(llm.get("claude-cli", {}), cfg, {"command": "claude_cli_command", "args": "claude_cli_args", "timeout": "claude_cli_timeout"})
+    _apply(llm.get("codex-cli", {}), cfg, {"command": "codex_cli_command", "args": "codex_cli_args", "timeout": "codex_cli_timeout"})
 
     return cfg
+
+
+def _apply(section: dict, cfg: MockrConfig, mapping: dict[str, str]) -> None:
+    for toml_key, attr_name in mapping.items():
+        if toml_key in section:
+            setattr(cfg, attr_name, section[toml_key])

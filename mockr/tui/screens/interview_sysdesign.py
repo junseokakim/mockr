@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
 
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -212,41 +211,36 @@ class SysDesignInterviewScreen(BaseInterviewScreen):
         self._set_thinking(True)
         self.run_worker(self._submit(answer), exclusive=True)
 
+    @staticmethod
+    def _extract_diagram_dsl(text: str) -> str | None:
+        """Extract DSL from a ```diagram ... ``` block, or return None."""
+        if "```diagram" not in text:
+            return None
+        try:
+            start = text.index("```diagram") + len("```diagram")
+            end = text.index("```", start)
+            return text[start:end].strip()
+        except ValueError:
+            return None
+
     async def _submit(self, answer: str) -> None:
-        diagram = None
-        if "```diagram" in answer:
-            try:
-                start = answer.index("```diagram") + len("```diagram")
-                end = answer.index("```", start)
-                diagram = parse_dsl(answer[start:end].strip())
-            except (ValueError, Exception):
-                pass
+        dsl_text = self._extract_diagram_dsl(answer)
+        diagram = parse_dsl(dsl_text) if dsl_text else None
         await self._orchestrator.process_answer(answer, diagram=diagram)
 
     def action_update_diagram(self) -> None:
         text = self.query_one("#answer-area", TextArea).text
-        dsl_text = text
-        if "```diagram" in text:
-            try:
-                start = text.index("```diagram") + len("```diagram")
-                end = text.index("```", start)
-                dsl_text = text[start:end].strip()
-            except ValueError:
-                pass
+        dsl_text = self._extract_diagram_dsl(text) or text
         self.query_one("#diagram-viewer", DiagramViewer).render_dsl(dsl_text)
 
     def action_request_hint(self) -> None:
         self.run_worker(self._fetch_hint(), exclusive=False)
 
+    def _default_hint(self) -> str:
+        return "Consider the scale requirements and failure modes."
+
     async def _fetch_hint(self) -> None:
         self._set_status("Fetching hint\u2026")
         await asyncio.sleep(0.3)
-        coach = self.query_one("#coach-text", Static)
-        if self._challenge and self._challenge.levels.get(self._session.level.value):
-            follow_ups = self._challenge.levels[self._session.level.value].follow_ups
-            if follow_ups:
-                coach.update(f"Coach hint: {random.choice(follow_ups)}")
-                self._set_status("")
-                return
-        coach.update("Coach: Consider the scale requirements and failure modes.")
+        self.query_one("#coach-text", Static).update(f"Coach: {self._resolve_hint()}")
         self._set_status("")
