@@ -10,6 +10,8 @@ from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Static
 
+from mockr.tui.widgets.score_panel import _render_bar
+
 _DEFAULT_DB = Path.home() / ".mockr" / "mockr.db"
 
 
@@ -38,7 +40,7 @@ class DashboardScreen(Screen):
     #stats-row {
         layout: horizontal;
         height: 1fr;
-        margin: 1;
+        margin: 1 1 0 1;
     }
 
     #sessions-panel {
@@ -69,6 +71,17 @@ class DashboardScreen(Screen):
     #challenges-table {
         height: 1fr;
     }
+
+    #plan-panel {
+        height: 10;
+        border: round $success;
+        padding: 0;
+        margin: 1;
+    }
+
+    #plan-table {
+        height: 1fr;
+    }
     """
 
     def compose(self) -> ComposeResult:
@@ -84,6 +97,10 @@ class DashboardScreen(Screen):
                 yield Static("Challenge Stats  [R to refresh]", classes="panel-header")
                 yield DataTable(id="challenges-table", zebra_stripes=True)
 
+        with Vertical(id="plan-panel"):
+            yield Static("Practice Plan", classes="panel-header")
+            yield DataTable(id="plan-table", zebra_stripes=True)
+
         yield Footer()
 
     def on_mount(self) -> None:
@@ -97,6 +114,9 @@ class DashboardScreen(Screen):
         challenges_table = self.query_one("#challenges-table", DataTable)
         challenges_table.add_columns("Challenge", "Level", "Attempts", "Avg Score", "Next Review")
 
+        plan_table = self.query_one("#plan-table", DataTable)
+        plan_table.add_columns("Dimension", "Mode", "Priority", "Gap", "Challenge", "Status")
+
     def _load_data(self) -> None:
         try:
             from mockr.core.progress.store import ProgressStore
@@ -104,6 +124,7 @@ class DashboardScreen(Screen):
             store = ProgressStore(_DEFAULT_DB)
             self._load_sessions(store)
             self._load_challenges(store)
+            self._load_plan(store)
             store.close()
         except Exception as exc:
             sessions_table = self.query_one("#sessions-table", DataTable)
@@ -144,12 +165,40 @@ class DashboardScreen(Screen):
                 next_review,
             )
 
+    def _load_plan(self, store) -> None:
+        plan_table = self.query_one("#plan-table", DataTable)
+        plan = store.get_latest_practice_plan()
+        if not plan:
+            plan_table.add_row("[dim]No practice plan yet[/dim]", "", "", "", "", "")
+            return
+        items = store.get_plan_items(plan["id"])
+        if not items:
+            plan_table.add_row("[dim]Plan has no items[/dim]", "", "", "", "", "")
+            return
+        status_colors = {"validated": "green", "in_progress": "yellow"}
+        for item in items:
+            status = item.get("status", "pending")
+            color = status_colors.get(status, "")
+            priority_bar = _render_bar(item.get("priority", 0.0), max_score=1.0)
+            gap = f"{item.get('gap_size', 0.0):.2f}"
+            status_display = f"[{color}]{status}[/{color}]" if color else status
+            plan_table.add_row(
+                item.get("dimension", "-"),
+                item.get("mode", "-"),
+                priority_bar,
+                gap,
+                item.get("challenge_id") or "-",
+                status_display,
+            )
+
     def action_go_back(self) -> None:
         self.app.pop_screen()
 
     def action_refresh(self) -> None:
         sessions_table = self.query_one("#sessions-table", DataTable)
         challenges_table = self.query_one("#challenges-table", DataTable)
+        plan_table = self.query_one("#plan-table", DataTable)
         sessions_table.clear()
         challenges_table.clear()
+        plan_table.clear()
         self._load_data()

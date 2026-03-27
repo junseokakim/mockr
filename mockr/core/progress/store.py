@@ -220,6 +220,13 @@ class ProgressStore:
         row = cursor.fetchone()
         return dict(row) if row else None
 
+    def get_latest_practice_plan(self) -> dict | None:
+        cursor = self._conn.execute(
+            "SELECT * FROM practice_plans ORDER BY created_at DESC LIMIT 1"
+        )
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
     def save_plan_item(
         self,
         item_id: str,
