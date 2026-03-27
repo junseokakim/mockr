@@ -1,9 +1,12 @@
 """SQLite persistence for sessions and progress tracking."""
+
 from __future__ import annotations
+
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
 
 class ProgressStore:
     def __init__(self, db_path: Path) -> None:
@@ -46,7 +49,7 @@ class ProgressStore:
     def save_session(self, session_id: str, mode: str, challenge_id: str, level: str, provider: str) -> None:
         self._conn.execute(
             "INSERT INTO sessions (id, mode, challenge_id, level, provider, state, started_at) VALUES (?, ?, ?, ?, ?, 'active', ?)",
-            (session_id, mode, challenge_id, level, provider, datetime.now(timezone.utc).isoformat()),
+            (session_id, mode, challenge_id, level, provider, datetime.now(UTC).isoformat()),
         )
         self._conn.commit()
 
@@ -62,12 +65,14 @@ class ProgressStore:
     def complete_session(self, session_id: str, overall_score: float, debrief: str) -> None:
         self._conn.execute(
             "UPDATE sessions SET state = 'complete', overall_score = ?, debrief = ?, ended_at = ? WHERE id = ?",
-            (overall_score, debrief, datetime.now(timezone.utc).isoformat(), session_id),
+            (overall_score, debrief, datetime.now(UTC).isoformat(), session_id),
         )
         self._conn.commit()
 
     def pause_session(self, session_id: str, suspended_state: str) -> None:
-        self._conn.execute("UPDATE sessions SET state = 'paused', suspended_state = ? WHERE id = ?", (suspended_state, session_id))
+        self._conn.execute(
+            "UPDATE sessions SET state = 'paused', suspended_state = ? WHERE id = ?", (suspended_state, session_id)
+        )
         self._conn.commit()
 
     def resume_session(self, session_id: str) -> None:
@@ -82,12 +87,14 @@ class ProgressStore:
         self._conn.commit()
 
     def get_turn_scores(self, session_id: str) -> list[dict]:
-        cursor = self._conn.execute("SELECT * FROM turn_scores WHERE session_id = ? ORDER BY turn_number", (session_id,))
+        cursor = self._conn.execute(
+            "SELECT * FROM turn_scores WHERE session_id = ? ORDER BY turn_number", (session_id,)
+        )
         return [dict(row) for row in cursor.fetchall()]
 
     def update_challenge_stats(self, challenge_id: str, level: str, score: float) -> None:
         existing = self.get_challenge_stats(challenge_id, level)
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         if existing:
             new_count = existing["times_attempted"] + 1
             new_avg = (existing["avg_score"] * existing["times_attempted"] + score) / new_count
@@ -103,7 +110,9 @@ class ProgressStore:
         self._conn.commit()
 
     def get_challenge_stats(self, challenge_id: str, level: str) -> dict | None:
-        cursor = self._conn.execute("SELECT * FROM challenge_stats WHERE challenge_id = ? AND level = ?", (challenge_id, level))
+        cursor = self._conn.execute(
+            "SELECT * FROM challenge_stats WHERE challenge_id = ? AND level = ?", (challenge_id, level)
+        )
         row = cursor.fetchone()
         return dict(row) if row else None
 

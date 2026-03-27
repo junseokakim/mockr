@@ -1,4 +1,5 @@
 """Code editor widget — TextArea with language-aware starter text."""
+
 from __future__ import annotations
 
 from textual.widgets import TextArea

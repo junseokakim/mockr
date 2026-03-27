@@ -1,11 +1,11 @@
 """Fake LLM backend for TUI testing — returns canned responses."""
+
 from __future__ import annotations
 
 import asyncio
 import json
 
 from mockr.core.types import Message, ModelConfig
-
 
 _QUESTION_RESPONSES = {
     "system-design": (
@@ -104,9 +104,7 @@ class FakeLLMBackend:
     async def generate(self, messages: list[Message], config: ModelConfig) -> str:
         await asyncio.sleep(self._delay)
         self._call_count += 1
-        last_user = next(
-            (m.content for m in reversed(messages) if m.role == "user"), ""
-        )
+        last_user = next((m.content for m in reversed(messages) if m.role == "user"), "")
         last_lower = last_user.lower()
         if "debrief" in last_lower or "overall_score" in last_lower:
             return _DEBRIEF_JSON

@@ -1,9 +1,9 @@
 """Countdown timer widget."""
+
 from __future__ import annotations
 
 import asyncio
 
-from textual.app import ComposeResult
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Static
@@ -63,10 +63,12 @@ class TimerWidget(Static):
             self.remaining -= 1
             self._update_display()
             if self._bus:
-                self._bus.emit(TimerTick(
-                    session_id=self._session_id,
-                    remaining_seconds=self.remaining,
-                ))
+                self._bus.emit(
+                    TimerTick(
+                        session_id=self._session_id,
+                        remaining_seconds=self.remaining,
+                    )
+                )
             if self.remaining == 0:
                 self.post_message(TimerExpired(self))
                 break
@@ -87,7 +89,7 @@ class TimerWidget(Static):
     class TimerExpired(Message):
         """Posted when the timer reaches zero."""
 
-        def __init__(self, timer: "TimerWidget") -> None:
+        def __init__(self, timer: TimerWidget) -> None:
             super().__init__()
             self.timer = timer
 

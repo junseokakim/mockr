@@ -1,6 +1,9 @@
 """Render Diagram model to Mermaid syntax."""
+
 from __future__ import annotations
+
 from mockr.core.diagrams.parser import Diagram
+
 
 def render_mermaid(diagram: Diagram) -> str:
     lines = ["graph LR"]

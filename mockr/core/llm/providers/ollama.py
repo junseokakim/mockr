@@ -1,9 +1,14 @@
 """Ollama API provider."""
+
 from __future__ import annotations
+
 import json
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
+
 import httpx
+
 from mockr.core.types import Message, ModelConfig
+
 
 class OllamaProvider:
     def __init__(self, base_url: str = "http://localhost:11434") -> None:

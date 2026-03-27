@@ -1,4 +1,5 @@
 """System prompt templates per interview mode."""
+
 from __future__ import annotations
 
 SYSTEM_DESIGN_PROMPT = """You are conducting a system design mock interview.

@@ -2,16 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from mockr.core.challenges.loader import load_challenge, load_challenges_from_dir, validate_challenge
-from mockr.core.challenges.models import Challenge
 
 
 class TestLoadChallenge:
     def test_load_system_design(self, tmp_path: Path) -> None:
         toml_file = tmp_path / "cache.toml"
-        toml_file.write_text('''
+        toml_file.write_text("""
 [meta]
 id = "cache"
 title = "Distributed Cache"
@@ -23,7 +20,7 @@ estimated_minutes = 20
 interviewer = "Design a cache."
 must_cover = ["eviction"]
 follow_ups = ["What about TTL?"]
-''')
+""")
         challenge = load_challenge(toml_file)
         assert challenge.id == "cache"
         assert challenge.mode == "system-design"
@@ -32,7 +29,7 @@ follow_ups = ["What about TTL?"]
 
     def test_load_coding_with_test_cases(self, tmp_path: Path) -> None:
         toml_file = tmp_path / "two-sum.toml"
-        toml_file.write_text('''
+        toml_file.write_text("""
 [meta]
 id = "two-sum"
 title = "Two Sum"
@@ -54,7 +51,7 @@ hidden = false
 input = "nums = [3, 3], target = 6"
 expected = "[0, 1]"
 hidden = true
-''')
+""")
         challenge = load_challenge(toml_file)
         assert challenge.language == "python"
         assert len(challenge.test_cases) == 2
@@ -62,7 +59,7 @@ hidden = true
 
     def test_load_sql_with_setup(self, tmp_path: Path) -> None:
         toml_file = tmp_path / "cohort.toml"
-        toml_file.write_text('''
+        toml_file.write_text("""
 [meta]
 id = "cohort"
 title = "Revenue Cohort"
@@ -82,7 +79,7 @@ follow_ups = []
 expected_columns = ["id"]
 expected_rows = [[1]]
 hidden = false
-''')
+""")
         challenge = load_challenge(toml_file)
         assert challenge.setup_sql == "CREATE TABLE users (id INT);"
         assert challenge.test_cases[0].expected_columns == ["id"]
@@ -116,7 +113,7 @@ follow_ups = []
 class TestValidation:
     def test_valid_challenge_passes(self, tmp_path: Path) -> None:
         toml_file = tmp_path / "valid.toml"
-        toml_file.write_text('''
+        toml_file.write_text("""
 [meta]
 id = "valid"
 title = "Valid"
@@ -128,20 +125,20 @@ estimated_minutes = 20
 interviewer = "Design it."
 must_cover = []
 follow_ups = []
-''')
+""")
         challenge = load_challenge(toml_file)
         errors = validate_challenge(challenge)
         assert errors == []
 
     def test_missing_levels_fails(self, tmp_path: Path) -> None:
         toml_file = tmp_path / "bad.toml"
-        toml_file.write_text('''
+        toml_file.write_text("""
 [meta]
 id = "bad"
 title = "Bad"
 mode = "system-design"
 tags = []
-''')
+""")
         challenge = load_challenge(toml_file)
         errors = validate_challenge(challenge)
         assert any("level" in e.lower() for e in errors)

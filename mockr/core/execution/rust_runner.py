@@ -1,5 +1,7 @@
 """Rust code execution via rustc + subprocess."""
+
 from __future__ import annotations
+
 import asyncio
 import tempfile
 import time
@@ -22,15 +24,16 @@ class RustRunner:
             # Compile step
             start = time.monotonic()
             compile_proc = await asyncio.create_subprocess_exec(
-                "rustc", str(src_path), "-o", str(out_path),
+                "rustc",
+                str(src_path),
+                "-o",
+                str(out_path),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
             try:
-                c_stdout, c_stderr = await asyncio.wait_for(
-                    compile_proc.communicate(), timeout=self._timeout
-                )
-            except asyncio.TimeoutError:
+                c_stdout, c_stderr = await asyncio.wait_for(compile_proc.communicate(), timeout=self._timeout)
+            except TimeoutError:
                 compile_proc.kill()
                 await compile_proc.communicate()
                 elapsed = int((time.monotonic() - start) * 1000)
@@ -57,10 +60,8 @@ class RustRunner:
                 stderr=asyncio.subprocess.PIPE,
             )
             try:
-                r_stdout, r_stderr = await asyncio.wait_for(
-                    run_proc.communicate(), timeout=self._timeout
-                )
-            except asyncio.TimeoutError:
+                r_stdout, r_stderr = await asyncio.wait_for(run_proc.communicate(), timeout=self._timeout)
+            except TimeoutError:
                 run_proc.kill()
                 await run_proc.communicate()
                 elapsed = int((time.monotonic() - start) * 1000)

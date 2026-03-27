@@ -1,7 +1,11 @@
 """Claude Code CLI provider (OAuth-based, subprocess)."""
+
 from __future__ import annotations
+
 import json
+
 from mockr.core.llm.providers import run_subprocess
+
 
 class ClaudeCLIProvider:
     def __init__(self, command: str = "claude", args: list[str] | None = None) -> None:

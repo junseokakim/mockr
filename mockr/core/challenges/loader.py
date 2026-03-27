@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from mockr._compat import tomllib
-
 from mockr.core.challenges.models import Challenge, LevelConfig, TestCase
 
 

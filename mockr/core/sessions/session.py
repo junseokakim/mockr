@@ -1,14 +1,18 @@
 """Session state machine and turn management."""
+
 from __future__ import annotations
+
 import json
 import uuid
+
 from mockr.core.events import EventBus, SessionStateChanged
 from mockr.core.types import Level, Message, Mode, SessionState
 
 
 class Session:
-    def __init__(self, bus: EventBus, mode: Mode, level: Level,
-                 session_id: str | None = None, max_history: int = 8) -> None:
+    def __init__(
+        self, bus: EventBus, mode: Mode, level: Level, session_id: str | None = None, max_history: int = 8
+    ) -> None:
         self.id = session_id or str(uuid.uuid4())
         self.bus = bus
         self.mode = mode
@@ -60,12 +64,18 @@ class Session:
             self.history = self.history[excess:]
 
     def serialize(self) -> str:
-        return json.dumps({
-            "id": self.id, "mode": self.mode.value, "level": self.level.value,
-            "state": self.state.value, "challenge_id": self.challenge_id,
-            "timer_minutes": self.timer_minutes, "turn_number": self.turn_number,
-            "history": [{"role": m.role, "content": m.content} for m in self.history],
-        })
+        return json.dumps(
+            {
+                "id": self.id,
+                "mode": self.mode.value,
+                "level": self.level.value,
+                "state": self.state.value,
+                "challenge_id": self.challenge_id,
+                "timer_minutes": self.timer_minutes,
+                "turn_number": self.turn_number,
+                "history": [{"role": m.role, "content": m.content} for m in self.history],
+            }
+        )
 
     @classmethod
     def from_serialized(cls, bus: EventBus, blob: str) -> Session:

@@ -1,4 +1,5 @@
 """Python version compatibility shims."""
+
 from __future__ import annotations
 
 import sys

@@ -14,9 +14,7 @@ class TestConfig:
 
     def test_load_from_toml(self, tmp_path: Path) -> None:
         toml_path = tmp_path / "config.toml"
-        toml_path.write_text(
-            '[llm]\nprovider = "claude-cli"\n\n[profile]\nlevel = "staff"\n'
-        )
+        toml_path.write_text('[llm]\nprovider = "claude-cli"\n\n[profile]\nlevel = "staff"\n')
         cfg = load_config(toml_path)
         assert cfg.provider == "claude-cli"
         assert cfg.level == "staff"
@@ -36,9 +34,7 @@ class TestConfig:
 
     def test_cli_provider_config(self, tmp_path: Path) -> None:
         toml_path = tmp_path / "config.toml"
-        toml_path.write_text(
-            '[llm]\nprovider = "claude-cli"\n\n[llm.claude-cli]\ncommand = "claude"\ntimeout = 120\n'
-        )
+        toml_path.write_text('[llm]\nprovider = "claude-cli"\n\n[llm.claude-cli]\ncommand = "claude"\ntimeout = 120\n')
         cfg = load_config(toml_path)
         assert cfg.claude_cli_command == "claude"
         assert cfg.claude_cli_timeout == 120

@@ -1,13 +1,18 @@
 """Unified LLM backend wrapping API and CLI providers."""
+
 from __future__ import annotations
-from typing import AsyncIterator
+
+from collections.abc import AsyncIterator
+
 from mockr.core.types import Message, ModelConfig
+
 
 def _format_messages_as_prompt(messages: list[Message]) -> str:
     parts = []
     for msg in messages:
         parts.append(f"{msg.role.upper()}:\n{msg.content}")
     return "\n\n".join(parts)
+
 
 class LLMBackend:
     def __init__(self, provider: object, provider_type: str) -> None:

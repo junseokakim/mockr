@@ -1,7 +1,10 @@
 """DSL parser: shorthand text -> Diagram model."""
+
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
+
 
 @dataclass
 class Node:
@@ -9,21 +12,25 @@ class Node:
     annotations: list[str] = field(default_factory=list)
     group: str | None = None
 
+
 @dataclass(eq=True, frozen=True)
 class Edge:
     source: str
     target: str
+
 
 @dataclass
 class Diagram:
     nodes: dict[str, Node] = field(default_factory=dict)
     edges: list[Edge] = field(default_factory=list)
 
+
 def _ensure_node(diagram: Diagram, name: str, group: str | None = None) -> None:
     if name not in diagram.nodes:
         diagram.nodes[name] = Node(name=name, group=group)
     elif group and not diagram.nodes[name].group:
         diagram.nodes[name].group = group
+
 
 def parse_dsl(text: str) -> Diagram:
     diagram = Diagram()

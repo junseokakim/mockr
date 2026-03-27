@@ -1,8 +1,10 @@
 from __future__ import annotations
-import json
+
 import pytest
+
 from mockr.core.llm.providers.ollama import OllamaProvider
 from mockr.core.types import Message, ModelConfig
+
 
 @pytest.mark.asyncio
 class TestOllamaProvider:

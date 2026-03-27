@@ -1,11 +1,12 @@
 """Dashboard screen — shows session history and challenge stats."""
+
 from __future__ import annotations
 
 from pathlib import Path
 
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Static
 
@@ -99,6 +100,7 @@ class DashboardScreen(Screen):
     def _load_data(self) -> None:
         try:
             from mockr.core.progress.store import ProgressStore
+
             store = ProgressStore(_DEFAULT_DB)
             self._load_sessions(store)
             self._load_challenges(store)

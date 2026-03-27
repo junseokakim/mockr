@@ -1,13 +1,13 @@
 """Shared base for all three interview screens."""
+
 from __future__ import annotations
 
-import asyncio
 import random
 
 from textual.screen import Screen
 from textual.widgets import Static
 
-from mockr.core.events import DebriefReady, EventBus, QuestionReady, ScoreReady
+from mockr.core.events import DebriefReady, EventBus
 from mockr.core.scoring.scorer import Scorer
 from mockr.core.sessions.orchestrator import TurnOrchestrator
 from mockr.core.sessions.session import Session
@@ -126,6 +126,7 @@ class BaseInterviewScreen(Screen):
 
     def _show_debrief(self, event: DebriefReady) -> None:
         from mockr.tui.screens.debrief import DebriefScreen
+
         self.app.push_screen(
             DebriefScreen(
                 overall_score=event.overall_score,

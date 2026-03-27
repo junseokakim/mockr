@@ -1,5 +1,7 @@
 """JavaScript code execution via Node.js subprocess."""
+
 from __future__ import annotations
+
 import asyncio
 import tempfile
 import time
@@ -20,13 +22,14 @@ class JSRunner:
         try:
             start = time.monotonic()
             proc = await asyncio.create_subprocess_exec(
-                "node", tmp_path,
+                "node",
+                tmp_path,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
             try:
                 stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=self._timeout)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 proc.kill()
                 await proc.communicate()
                 elapsed = int((time.monotonic() - start) * 1000)

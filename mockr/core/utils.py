@@ -1,4 +1,5 @@
 """Shared utilities for mockr core."""
+
 from __future__ import annotations
 
 import json

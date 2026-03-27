@@ -1,7 +1,11 @@
 """Render Diagram model to ASCII box-drawing art."""
+
 from __future__ import annotations
+
 from collections import defaultdict, deque
+
 from mockr.core.diagrams.parser import Diagram
+
 
 def _topological_layers(diagram: Diagram) -> list[list[str]]:
     if not diagram.nodes:
@@ -34,6 +38,7 @@ def _topological_layers(diagram: Diagram) -> list[list[str]]:
         layers[depth[node]].append(node)
     max_layer = max(layers.keys()) if layers else 0
     return [layers[i] for i in range(max_layer + 1)]
+
 
 def render_ascii(diagram: Diagram) -> str:
     layers = _topological_layers(diagram)

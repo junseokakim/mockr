@@ -1,9 +1,12 @@
 """JSON/CSV export for progress data."""
+
 from __future__ import annotations
+
 import csv
 import io
 import json
 from pathlib import Path
+
 from mockr.core.progress.store import ProgressStore
 
 DEFAULT_DB_PATH = Path.home() / ".mockr" / "mockr.db"

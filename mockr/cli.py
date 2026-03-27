@@ -1,6 +1,8 @@
 """CLI entry point for mockr."""
-import click
+
 from pathlib import Path
+
+import click
 
 
 @click.group(invoke_without_command=True)
@@ -15,6 +17,7 @@ def main(ctx, mode, level, lang, provider, model):
     if ctx.invoked_subcommand is None:
         # Launch TUI
         from mockr.tui.app import MockrApp
+
         app = MockrApp()
         app.run()
 
@@ -23,6 +26,7 @@ def main(ctx, mode, level, lang, provider, model):
 def practice():
     """Start next due review (spaced repetition picks the challenge)."""
     from mockr.tui.app import MockrApp
+
     app = MockrApp()
     app.run()
 
@@ -31,6 +35,7 @@ def practice():
 def dashboard():
     """Show progress dashboard."""
     from mockr.tui.app import MockrApp
+
     app = MockrApp()
     app.run()
 
@@ -41,7 +46,7 @@ def dashboard():
 def export(fmt, output):
     """Export progress data."""
     from mockr.core.progress.export import export_data
-    from mockr.config import load_config
+
     result = export_data(fmt, output)
     click.echo(result)
 
@@ -53,6 +58,7 @@ def challenge_cmd(action, path):
     """Challenge management commands."""
     if action == "validate":
         from mockr.core.challenges.loader import load_challenge, validate_challenge
+
         ch = load_challenge(Path(path))
         errors = validate_challenge(ch)
         if errors:

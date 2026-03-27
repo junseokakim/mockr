@@ -1,4 +1,5 @@
 """Debrief screen — shown after an interview ends."""
+
 from __future__ import annotations
 
 from textual.app import ComposeResult
@@ -134,6 +135,7 @@ class DebriefScreen(Screen):
 
     def action_new_session(self) -> None:
         from mockr.tui.screens.setup import SetupScreen
+
         while len(self.app.screen_stack) > 1:
             self.app.pop_screen()
         self.app.push_screen(SetupScreen())

@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from mockr.core.diagrams.mermaid_renderer import render_mermaid
 from mockr.core.diagrams.parser import parse_dsl
+
 
 class TestMermaidRenderer:
     def test_simple_chain(self) -> None:

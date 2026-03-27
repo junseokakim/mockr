@@ -1,5 +1,7 @@
 from __future__ import annotations
-from mockr.core.diagrams.parser import parse_dsl, Edge
+
+from mockr.core.diagrams.parser import Edge, parse_dsl
+
 
 class TestParseDSL:
     def test_simple_chain(self) -> None:

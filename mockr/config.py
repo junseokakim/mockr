@@ -22,14 +22,10 @@ class MockrConfig:
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
     claude_cli_command: str = "claude"
-    claude_cli_args: list[str] = field(
-        default_factory=lambda: ["-p", "--output-format", "json"]
-    )
+    claude_cli_args: list[str] = field(default_factory=lambda: ["-p", "--output-format", "json"])
     claude_cli_timeout: int = 180
     codex_cli_command: str = "codex"
-    codex_cli_args: list[str] = field(
-        default_factory=lambda: ["exec", "--json", "--skip-git-repo-check"]
-    )
+    codex_cli_args: list[str] = field(default_factory=lambda: ["exec", "--json", "--skip-git-repo-check"])
     codex_cli_timeout: int = 180
 
 
@@ -49,8 +45,16 @@ def load_config(path: Path | None = None) -> MockrConfig:
     _apply(llm.get("ollama", {}), cfg, {"base_url": "ollama_base_url", "model": "ollama_model"})
     _apply(llm.get("openai", {}), cfg, {"api_key": "openai_api_key", "model": "openai_model"})
     _apply(llm.get("anthropic", {}), cfg, {"api_key": "anthropic_api_key", "model": "anthropic_model"})
-    _apply(llm.get("claude-cli", {}), cfg, {"command": "claude_cli_command", "args": "claude_cli_args", "timeout": "claude_cli_timeout"})
-    _apply(llm.get("codex-cli", {}), cfg, {"command": "codex_cli_command", "args": "codex_cli_args", "timeout": "codex_cli_timeout"})
+    _apply(
+        llm.get("claude-cli", {}),
+        cfg,
+        {"command": "claude_cli_command", "args": "claude_cli_args", "timeout": "claude_cli_timeout"},
+    )
+    _apply(
+        llm.get("codex-cli", {}),
+        cfg,
+        {"command": "codex_cli_command", "args": "codex_cli_args", "timeout": "codex_cli_timeout"},
+    )
 
     return cfg
 

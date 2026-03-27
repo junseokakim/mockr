@@ -1,6 +1,9 @@
 """OpenAI API provider."""
+
 from __future__ import annotations
-from typing import AsyncIterator
+
+from collections.abc import AsyncIterator
+
 from mockr.core.types import Message, ModelConfig
 
 
@@ -20,7 +23,9 @@ class OpenAIProvider:
         response = await self._client.chat.completions.create(
             model=config.model or self._model,
             messages=self._format_messages(messages),
-            temperature=config.temperature, max_tokens=config.max_tokens, stream=True,
+            temperature=config.temperature,
+            max_tokens=config.max_tokens,
+            stream=True,
         )
         async for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None

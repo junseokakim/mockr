@@ -1,6 +1,9 @@
 """Anthropic API provider."""
+
 from __future__ import annotations
-from typing import AsyncIterator
+
+from collections.abc import AsyncIterator
+
 from mockr.core.types import Message, ModelConfig
 
 
@@ -25,8 +28,12 @@ class AnthropicProvider:
 
     async def stream(self, messages: list[Message], config: ModelConfig) -> AsyncIterator[str]:
         system, conversation = self._prepare_messages(messages)
-        kwargs = {"model": config.model or self._model, "messages": conversation,
-                  "max_tokens": config.max_tokens, "temperature": config.temperature}
+        kwargs = {
+            "model": config.model or self._model,
+            "messages": conversation,
+            "max_tokens": config.max_tokens,
+            "temperature": config.temperature,
+        }
         if system:
             kwargs["system"] = system
         async with self._client.messages.stream(**kwargs) as stream:

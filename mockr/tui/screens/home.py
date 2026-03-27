@@ -1,4 +1,5 @@
 """Home screen — mockr entry point."""
+
 from __future__ import annotations
 
 from textual.app import ComposeResult
@@ -96,13 +97,16 @@ class HomeScreen(Screen):
 
     def action_new_session(self) -> None:
         from mockr.tui.screens.setup import SetupScreen
+
         self.app.push_screen(SetupScreen())
 
     def action_practice(self) -> None:
         from mockr.tui.screens.setup import SetupScreen
+
         # Launch setup in practice mode (pre-selected due reviews)
         self.app.push_screen(SetupScreen(practice_mode=True))
 
     def action_dashboard(self) -> None:
         from mockr.tui.screens.dashboard import DashboardScreen
+
         self.app.push_screen(DashboardScreen())

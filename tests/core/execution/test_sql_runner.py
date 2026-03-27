@@ -1,5 +1,7 @@
 from __future__ import annotations
+
 import pytest
+
 from mockr.core.execution.sql_runner import SQLRunner
 
 

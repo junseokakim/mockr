@@ -1,8 +1,8 @@
 from __future__ import annotations
-import pytest
+
 from mockr.core.events import EventBus, SessionStateChanged
 from mockr.core.sessions.session import Session
-from mockr.core.types import SessionState, Level, Mode
+from mockr.core.types import Level, Mode, SessionState
 
 
 class TestSession:

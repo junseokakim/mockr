@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -17,7 +16,7 @@ def tmp_dir(tmp_path: Path) -> Path:
 @pytest.fixture
 def sample_challenge_toml() -> str:
     """Minimal valid challenge TOML for testing."""
-    return '''
+    return """
 [meta]
 id = "test-challenge"
 title = "Test Challenge"
@@ -29,4 +28,4 @@ estimated_minutes = 20
 interviewer = "Design a test system."
 must_cover = ["scalability"]
 follow_ups = ["What about failure modes?"]
-'''
+"""

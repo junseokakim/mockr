@@ -1,4 +1,5 @@
 """STAR tracker widget — shows S/T/A/R coverage based on dimension scores."""
+
 from __future__ import annotations
 
 from textual.widgets import Static

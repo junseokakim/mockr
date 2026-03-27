@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from mockr.core.diagrams.ascii_renderer import render_ascii
 from mockr.core.diagrams.parser import parse_dsl
+
 
 class TestASCIIRenderer:
     def test_simple_chain(self) -> None:

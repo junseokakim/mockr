@@ -1,6 +1,9 @@
 """SQL execution via DuckDB (in-process)."""
+
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 import duckdb
 
 
@@ -31,10 +34,9 @@ class SQLRunner:
             rows = [list(row) for row in result.fetchall()]
             actual_sorted = sorted(rows)
             expected_sorted = sorted(expected_rows)
-            passed = (
-                [c.lower() for c in columns] == [c.lower() for c in expected_columns]
-                and actual_sorted == expected_sorted
-            )
+            passed = [c.lower() for c in columns] == [
+                c.lower() for c in expected_columns
+            ] and actual_sorted == expected_sorted
             return SQLResult(passed=passed, actual_columns=columns, actual_rows=rows)
         except Exception as e:
             return SQLResult(passed=False, actual_columns=[], actual_rows=[], error=str(e))

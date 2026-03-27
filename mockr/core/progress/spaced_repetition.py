@@ -1,7 +1,9 @@
 """SM-2 spaced repetition algorithm adapted for interview practice."""
+
 from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 
 @dataclass
@@ -24,9 +26,10 @@ def _score_to_quality(score: float) -> int:
         return 0
 
 
-def compute_next_review(score: float, ease_factor: float, last_interval_days: int,
-                         now: datetime | None = None) -> ReviewResult:
-    now = now or datetime.now(timezone.utc)
+def compute_next_review(
+    score: float, ease_factor: float, last_interval_days: int, now: datetime | None = None
+) -> ReviewResult:
+    now = now or datetime.now(UTC)
     quality = _score_to_quality(score)
     new_ef = ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
     new_ef = max(1.3, new_ef)

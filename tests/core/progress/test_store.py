@@ -1,7 +1,9 @@
 from __future__ import annotations
+
 from pathlib import Path
-import pytest
+
 from mockr.core.progress.store import ProgressStore
+
 
 class TestProgressStore:
     def test_create_tables(self, tmp_path: Path) -> None:

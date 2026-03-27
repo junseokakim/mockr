@@ -1,7 +1,8 @@
 from __future__ import annotations
+
 import json
-import pytest
-from mockr.core.scoring.scorer import Scorer, ScoreResult, DIMENSIONS_BY_MODE
+
+from mockr.core.scoring.scorer import DIMENSIONS_BY_MODE, Scorer, ScoreResult
 
 
 class TestDimensions:
@@ -27,9 +28,11 @@ class TestScorer:
     def test_build_scoring_prompt(self) -> None:
         scorer = Scorer()
         prompt = scorer.build_scoring_prompt(
-            mode="system-design", level="senior",
+            mode="system-design",
+            level="senior",
             answer="I would use Redis with LRU eviction...",
-            must_cover=["eviction policy", "invalidation"], turn_number=2,
+            must_cover=["eviction policy", "invalidation"],
+            turn_number=2,
         )
         assert "senior" in prompt
         assert "eviction policy" in prompt
@@ -37,10 +40,13 @@ class TestScorer:
 
     def test_parse_score_response_valid(self) -> None:
         scorer = Scorer()
-        raw = json.dumps({
-            "dimensions": {"structure": 4, "constraints": 3, "tradeoffs": 3, "reliability": 2, "concreteness": 4},
-            "strengths": ["Good structure"], "improvements": ["Needs reliability"],
-        })
+        raw = json.dumps(
+            {
+                "dimensions": {"structure": 4, "constraints": 3, "tradeoffs": 3, "reliability": 2, "concreteness": 4},
+                "strengths": ["Good structure"],
+                "improvements": ["Needs reliability"],
+            }
+        )
         result = scorer.parse_score_response(raw, mode="system-design")
         assert isinstance(result, ScoreResult)
         assert result.dimensions["structure"] == 4.0

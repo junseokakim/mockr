@@ -1,5 +1,7 @@
 """LLM-based scoring for interview answers."""
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 from mockr.core.utils import extract_json_object
@@ -19,8 +21,7 @@ class ScoreResult:
 
 
 class Scorer:
-    def build_scoring_prompt(self, mode: str, level: str, answer: str,
-                              must_cover: list[str], turn_number: int) -> str:
+    def build_scoring_prompt(self, mode: str, level: str, answer: str, must_cover: list[str], turn_number: int) -> str:
         dimensions = DIMENSIONS_BY_MODE.get(mode, DIMENSIONS_BY_MODE["system-design"])
         dims_str = ", ".join(dimensions)
         must_cover_str = "\n".join(f"  - {item}" for item in must_cover) if must_cover else "  (none specified)"
@@ -69,5 +70,6 @@ Return ONLY valid JSON in this exact format:
         except (ValueError, KeyError, TypeError):
             return ScoreResult(
                 dimensions={d: 3.0 for d in dimensions},
-                strengths=[], improvements=["(Scoring failed — using default scores)"],
+                strengths=[],
+                improvements=["(Scoring failed — using default scores)"],
             )

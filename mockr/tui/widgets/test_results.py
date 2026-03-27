@@ -1,9 +1,10 @@
 """Test results widget — shows pass/fail for each test case."""
+
 from __future__ import annotations
 
 from textual.widgets import Static
 
-from mockr.core.events import ExecutionResult, TestResult
+from mockr.core.events import ExecutionResult
 
 
 class TestResultsPanel(Static):
@@ -31,8 +32,7 @@ class TestResultsPanel(Static):
 
         summary_color = "green" if result.failed == 0 else "red"
         lines.append(
-            f"[{summary_color}]{result.passed}/{result.total} passed[/{summary_color}]"
-            f"  ({result.execution_time_ms}ms)"
+            f"[{summary_color}]{result.passed}/{result.total} passed[/{summary_color}]  ({result.execution_time_ms}ms)"
         )
         lines.append("")
 

@@ -1,8 +1,8 @@
 """Score panel widget — shows dimension scores after each turn."""
+
 from __future__ import annotations
 
 from textual.widgets import Static
-
 
 _BAR_WIDTH = 10
 _BAR_FILL = "█"
@@ -55,9 +55,7 @@ class ScorePanel(Static):
 
         for dim, score in self._dimensions.items():
             bar = _render_bar(score)
-            lines.append(
-                f"[dim]{dim:<16}[/dim][primary]{bar}[/primary] [accent]{score:.1f}[/accent]"
-            )
+            lines.append(f"[dim]{dim:<16}[/dim][primary]{bar}[/primary] [accent]{score:.1f}[/accent]")
 
         if self._strengths:
             lines.append("")

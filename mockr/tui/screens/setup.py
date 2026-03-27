@@ -1,4 +1,5 @@
 """Session setup screen — configure and launch an interview."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -165,9 +166,7 @@ class SetupScreen(Screen):
     def on_mount(self) -> None:
         self._load_challenges()
         if self._practice_mode:
-            self.query_one("#status-label", Static).update(
-                "Practice mode — showing due-review challenges first"
-            )
+            self.query_one("#status-label", Static).update("Practice mode — showing due-review challenges first")
 
     def _load_challenges(self) -> None:
         challenge_list = self.query_one("#challenge-list", ListView)
@@ -238,6 +237,7 @@ class SetupScreen(Screen):
         if challenge is None and self._challenges:
             # Pick a random one matching the mode if available
             import random
+
             mode_challenges = [c for c in self._challenges if c.mode == self._selected_mode.value]
             if mode_challenges:
                 challenge = random.choice(mode_challenges)
@@ -264,6 +264,7 @@ class SetupScreen(Screen):
 
         if mode == Mode.CODING:
             from mockr.tui.screens.interview_coding import CodingInterviewScreen
+
             self.app.push_screen(
                 CodingInterviewScreen(
                     session=session,
@@ -274,6 +275,7 @@ class SetupScreen(Screen):
             )
         elif mode == Mode.BEHAVIORAL:
             from mockr.tui.screens.interview_behavioral import BehavioralInterviewScreen
+
             self.app.push_screen(
                 BehavioralInterviewScreen(
                     session=session,
@@ -284,6 +286,7 @@ class SetupScreen(Screen):
         else:
             # system-design or full-loop defaults to sysdesign screen
             from mockr.tui.screens.interview_sysdesign import SysDesignInterviewScreen
+
             self.app.push_screen(
                 SysDesignInterviewScreen(
                     session=session,

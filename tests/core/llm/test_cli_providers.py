@@ -1,9 +1,13 @@
 from __future__ import annotations
+
 import json
 from unittest.mock import AsyncMock, patch
+
 import pytest
+
 from mockr.core.llm.providers.claude_cli import ClaudeCLIProvider
 from mockr.core.llm.providers.codex_cli import CodexCLIProvider
+
 
 @pytest.mark.asyncio
 class TestClaudeCLI:
@@ -28,6 +32,7 @@ class TestClaudeCLI:
         provider = ClaudeCLIProvider(command="claude", args=["-p"])
         with pytest.raises(TimeoutError):
             await provider.run("prompt", timeout=5)
+
 
 @pytest.mark.asyncio
 class TestCodexCLI:

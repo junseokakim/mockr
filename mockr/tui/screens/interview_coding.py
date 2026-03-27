@@ -1,4 +1,5 @@
 """Coding interview screen."""
+
 from __future__ import annotations
 
 import asyncio
@@ -210,9 +211,7 @@ class CodingInterviewScreen(BaseInterviewScreen):
             event = await self._build_execution_result(code)
             self._bus.emit(event)
         except Exception as exc:
-            self.call_from_thread(
-                self.query_one("#test-results", TestResultsPanel).show_error, str(exc)
-            )
+            self.call_from_thread(self.query_one("#test-results", TestResultsPanel).show_error, str(exc))
             self._set_status(f"Error: {exc}")
 
     async def _build_execution_result(self, code: str) -> ExecutionResult:
@@ -220,7 +219,9 @@ class CodingInterviewScreen(BaseInterviewScreen):
             return ExecutionResult(
                 session_id=self._session.id,
                 language=self._language,
-                passed=0, failed=0, total=0,
+                passed=0,
+                failed=0,
+                total=0,
                 test_details=[],
                 stdout="",
                 stderr="No test cases defined for this challenge.",
@@ -229,16 +230,15 @@ class CodingInterviewScreen(BaseInterviewScreen):
             )
 
         if self._language == "python":
-            visible = [
-                (i, tc) for i, tc in enumerate(self._challenge.test_cases)
-                if not tc.hidden and tc.input
-            ]
+            visible = [(i, tc) for i, tc in enumerate(self._challenge.test_cases) if not tc.hidden and tc.input]
             # Wrap each case in try/except so all run independently
             lines = ["_mockr_results = []"]
             for i, tc in visible:
                 lines.append("try:")
                 lines.append(f"    _actual = str({tc.input})")
-                lines.append(f"    _mockr_results.append((_actual == {repr(tc.expected)}, {repr(tc.expected)}, _actual))")
+                lines.append(
+                    f"    _mockr_results.append((_actual == {repr(tc.expected)}, {repr(tc.expected)}, _actual))"
+                )
                 lines.append("except Exception as _e:")
                 lines.append(f"    _mockr_results.append((False, {repr(tc.expected)}, str(_e)))")
             lines.append("import json as _j, sys as _s")
@@ -255,13 +255,19 @@ class CodingInterviewScreen(BaseInterviewScreen):
                 if line.startswith("MOCKR_RESULTS:"):
                     try:
                         import json
-                        parsed = json.loads(line[len("MOCKR_RESULTS:"):])
+
+                        parsed = json.loads(line[len("MOCKR_RESULTS:") :])
                         for idx, (ok, expected, actual) in enumerate(parsed):
                             passed += int(ok)
-                            details.append(TestResult(
-                                case_index=idx, passed=ok,
-                                expected=expected, actual=actual, hidden=False,
-                            ))
+                            details.append(
+                                TestResult(
+                                    case_index=idx,
+                                    passed=ok,
+                                    expected=expected,
+                                    actual=actual,
+                                    hidden=False,
+                                )
+                            )
                     except (ValueError, IndexError):
                         pass
                     break
@@ -270,11 +276,15 @@ class CodingInterviewScreen(BaseInterviewScreen):
                 # Fallback if parsing failed
                 passed = total if result.exit_code == 0 else 0
                 for idx, (_, tc) in enumerate(visible):
-                    details.append(TestResult(
-                        case_index=idx, passed=result.exit_code == 0,
-                        expected=tc.expected, actual="pass" if result.exit_code == 0 else "see stderr",
-                        hidden=False,
-                    ))
+                    details.append(
+                        TestResult(
+                            case_index=idx,
+                            passed=result.exit_code == 0,
+                            expected=tc.expected,
+                            actual="pass" if result.exit_code == 0 else "see stderr",
+                            hidden=False,
+                        )
+                    )
 
             return ExecutionResult(
                 session_id=self._session.id,
@@ -305,13 +315,15 @@ class CodingInterviewScreen(BaseInterviewScreen):
                 passed=passed,
                 failed=1 - passed,
                 total=1,
-                test_details=[TestResult(
-                    case_index=0,
-                    passed=result.passed,
-                    expected=str(tc.expected_rows),
-                    actual=str(result.actual_rows),
-                    hidden=False,
-                )],
+                test_details=[
+                    TestResult(
+                        case_index=0,
+                        passed=result.passed,
+                        expected=str(tc.expected_rows),
+                        actual=str(result.actual_rows),
+                        hidden=False,
+                    )
+                ],
                 stdout="",
                 stderr=result.error or "",
                 exit_code=0 if result.passed else 1,
@@ -321,7 +333,9 @@ class CodingInterviewScreen(BaseInterviewScreen):
         return ExecutionResult(
             session_id=self._session.id,
             language=self._language,
-            passed=0, failed=0, total=0,
+            passed=0,
+            failed=0,
+            total=0,
             test_details=[],
             stdout="",
             stderr=f"Execution for {self._language} not available in TUI demo.",

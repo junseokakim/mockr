@@ -1,4 +1,5 @@
 """Diagram viewer widget — parses DSL and renders ASCII art."""
+
 from __future__ import annotations
 
 from textual.widgets import Static

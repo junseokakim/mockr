@@ -1,5 +1,7 @@
 """Python code execution via subprocess."""
+
 from __future__ import annotations
+
 import asyncio
 import tempfile
 import time
@@ -27,16 +29,20 @@ class PythonRunner:
         try:
             start = time.monotonic()
             proc = await asyncio.create_subprocess_exec(
-                "python", tmp_path,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+                "python",
+                tmp_path,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
             )
             try:
                 stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=self._timeout)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 proc.kill()
                 await proc.communicate()
                 elapsed = int((time.monotonic() - start) * 1000)
-                return RunResult(stdout="", stderr=f"Timeout after {self._timeout}s", exit_code=1, execution_time_ms=elapsed)
+                return RunResult(
+                    stdout="", stderr=f"Timeout after {self._timeout}s", exit_code=1, execution_time_ms=elapsed
+                )
             elapsed = int((time.monotonic() - start) * 1000)
             return RunResult(
                 stdout=stdout.decode("utf-8", errors="replace"),

@@ -1,7 +1,11 @@
 """Codex CLI provider (OAuth-based, subprocess)."""
+
 from __future__ import annotations
+
 import json
+
 from mockr.core.llm.providers import run_subprocess
+
 
 class CodexCLIProvider:
     def __init__(self, command: str = "codex", args: list[str] | None = None) -> None:
@@ -14,7 +18,7 @@ class CodexCLIProvider:
     async def run(self, prompt: str, timeout: int = 180) -> str:
         cmd = self._build_command()
         raw = await run_subprocess(cmd, stdin_data=prompt, timeout=timeout)
-        lines = [l for l in raw.strip().splitlines() if l.strip()]
+        lines = [ln for ln in raw.strip().splitlines() if ln.strip()]
         for line in reversed(lines):
             try:
                 data = json.loads(line)

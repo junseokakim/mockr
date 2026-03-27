@@ -1,4 +1,5 @@
 """Main Textual application for mockr."""
+
 from __future__ import annotations
 
 from textual.app import App
