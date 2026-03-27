@@ -7,7 +7,7 @@ import click
 
 @click.group(invoke_without_command=True)
 @click.option("--mode", type=click.Choice(["system-design", "coding", "behavioral", "full-loop"]), default=None)
-@click.option("--level", type=click.Choice(["mid", "senior", "staff", "principal"]), default=None)
+@click.option("--level", type=click.Choice(["intern", "junior", "mid", "senior", "staff", "principal"]), default=None)
 @click.option("--lang", type=click.Choice(["python", "sql", "rust", "javascript"]), default=None)
 @click.option("--provider", type=str, default=None)
 @click.option("--model", type=str, default=None)

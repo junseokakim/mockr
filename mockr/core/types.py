@@ -17,10 +17,16 @@ class SessionState(Enum):
 
 
 class Level(Enum):
+    INTERN = "intern"
+    JUNIOR = "junior"
     MID = "mid"
     SENIOR = "senior"
     STAFF = "staff"
     PRINCIPAL = "principal"
+    # Management track (placeholders — not yet implemented)
+    ENGINEERING_MANAGER = "engineering_manager"
+    DIRECTOR = "director"
+    VP = "vp"
 
 
 class Mode(Enum):
