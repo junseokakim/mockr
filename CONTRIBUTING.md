@@ -5,7 +5,7 @@ Thanks for your interest in contributing!
 ## Development Setup
 
 ```bash
-git clone https://github.com/andrewkim/mockr.git
+git clone https://github.com/junseokakim/mockr.git
 cd mockr
 python -m venv .venv
 source .venv/bin/activate  # or .venv/Scripts/activate on Windows
