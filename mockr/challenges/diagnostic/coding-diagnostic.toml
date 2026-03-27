@@ -1,0 +1,60 @@
+[meta]
+id = "diagnostic-coding"
+title = "Diagnostic: Array Manipulation"
+mode = "coding"
+language = "python"
+tags = ["diagnostic", "arrays", "algorithms"]
+
+[levels.intern]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for an intern-level candidate.
+Present: 'Given a list of integers, write a function that returns the list with all duplicates removed, preserving original order.'
+Keep it simple — assess basic coding ability."""
+must_cover = ["iteration", "deduplication logic", "preserving order"]
+follow_ups = ["What is the time complexity?", "Can you think of another approach?"]
+
+[levels.junior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a junior-level candidate.
+Present: 'Given a list of integers, write a function that returns the list with all duplicates removed, preserving original order. Then extend it to handle a stream of integers where you return the running count of unique elements seen so far.'
+Assess problem decomposition and coding fluency."""
+must_cover = ["set-based deduplication", "streaming extension", "time complexity awareness"]
+follow_ups = ["How would you handle very large streams?", "What data structure gives you O(1) lookup?"]
+
+[levels.mid]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a mid-level candidate.
+Present: 'Implement a function that takes a list of intervals [[start, end], ...] and merges all overlapping intervals. Return the merged list sorted by start time.'
+Example: [[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]
+Assess algorithm design and edge case handling."""
+must_cover = ["sorting approach", "merge logic", "edge cases (empty, single, all overlapping)"]
+follow_ups = ["What's the time complexity?", "What if intervals arrive as a stream?"]
+
+[levels.senior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a senior-level candidate.
+Present: 'Design and implement an LRU cache class with get(key) and put(key, value) operations, both in O(1) time. The cache has a fixed capacity.'
+Assess data structure choice, API design, and code quality."""
+must_cover = ["OrderedDict or doubly-linked list + hash map", "O(1) get and put", "capacity eviction", "clean API"]
+follow_ups = ["How would you make this thread-safe?", "How would you add TTL support?"]
+
+[levels.staff]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a staff-level candidate.
+Present: 'Design and implement a task scheduler that executes tasks with dependencies in the correct order. Tasks can run in parallel if they have no mutual dependencies. Return a valid execution plan as a list of groups (each group runs in parallel).'
+Assess graph thinking, correctness, and system-level design sense."""
+must_cover = ["topological sort", "cycle detection", "parallel grouping", "clean abstraction"]
+follow_ups = ["How do you handle cycles?", "How would you prioritize critical path tasks?"]
+
+[levels.principal]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a principal-level candidate.
+Present: 'Design and implement a simple expression evaluator that supports +, -, *, /, parentheses, and variables. Evaluate("(x + 2) * y", {"x": 3, "y": 4}) should return 20. Discuss your parsing strategy and extensibility.'
+Assess language design intuition, parsing approach, and architectural taste."""
+must_cover = ["parsing strategy (recursive descent or shunting yard)", "operator precedence", "variable resolution", "extensibility discussion"]
+follow_ups = ["How would you add function calls?", "How would you report parse errors with good messages?"]
+
+[[test_cases]]
+input = "nums = [1, 2, 2, 3, 1]"
+expected = "[1, 2, 3]"
+hidden = false

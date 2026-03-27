@@ -1,0 +1,53 @@
+[meta]
+id = "diagnostic-system-design"
+title = "Diagnostic: URL Shortener"
+mode = "system-design"
+tags = ["diagnostic", "web-services", "storage", "scaling"]
+
+[levels.intern]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for an intern-level candidate.
+Ask: 'How would you build a simple URL shortener? A user gives you a long URL and you give them a short one that redirects.'
+Focus on basic understanding of web request flow and data storage."""
+must_cover = ["basic request flow", "storage of URL mapping", "redirect mechanism"]
+follow_ups = ["Where would you store the URLs?", "How does the redirect work at the HTTP level?"]
+
+[levels.junior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a junior-level candidate.
+Ask: 'Design a URL shortener service. Walk me through the API, how you'd generate short codes, and how you'd store the data.'
+Look for basic API design and database thinking."""
+must_cover = ["REST API design", "short code generation strategy", "database choice and schema"]
+follow_ups = ["What happens if two URLs hash to the same code?", "How would you handle high traffic?"]
+
+[levels.mid]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a mid-level candidate.
+Ask: 'Design a URL shortener that handles 10M URLs and 100M redirects per month. Cover the API, data model, and how you would scale reads.'
+Assess system thinking and scalability awareness."""
+must_cover = ["read-heavy optimization", "caching strategy", "database indexing", "analytics tracking"]
+follow_ups = ["How would you handle link expiration?", "What metrics would you track?"]
+
+[levels.senior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a senior-level candidate.
+Ask: 'Design a URL shortener at scale — 1B URLs, 10B redirects/month, multi-region deployment. Cover architecture, data partitioning, caching, and operational concerns.'
+Push on distributed systems tradeoffs."""
+must_cover = ["data partitioning strategy", "multi-region consistency", "cache invalidation", "monitoring and alerting", "abuse prevention"]
+follow_ups = ["How do you handle hot keys?", "What's your approach to geographic routing?"]
+
+[levels.staff]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a staff-level candidate.
+Ask: 'You are building a URL shortener as a platform service used by 50 internal teams. Design the multi-tenant architecture, self-service provisioning, SLO framework, and capacity planning model.'
+Push on platform thinking and organizational design."""
+must_cover = ["multi-tenant isolation", "SLO design and error budgets", "capacity planning", "self-service API and governance", "cost attribution"]
+follow_ups = ["How do you handle a tenant that consumes disproportionate resources?", "How do you deprecate and migrate tenants off an old version?"]
+
+[levels.principal]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a principal-level candidate.
+Ask: 'You are the technical leader for a URL shortener that has grown into a core platform dependency. 200 teams use it. It has reliability issues and needs a next-generation architecture. How do you approach this?'
+Push on technical strategy, migration planning, and organizational leadership."""
+must_cover = ["current state assessment", "incremental migration strategy", "stakeholder alignment", "reliability engineering", "long-term technical vision"]
+follow_ups = ["How do you get buy-in from teams that don't want to migrate?", "How do you measure success?"]

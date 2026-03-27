@@ -1,0 +1,53 @@
+[meta]
+id = "diagnostic-behavioral"
+title = "Diagnostic: Overcoming a Technical Challenge"
+mode = "behavioral"
+tags = ["diagnostic", "problem-solving", "resilience", "communication"]
+
+[levels.intern]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for an intern-level candidate.
+Ask: 'Tell me about a project or assignment — school or personal — where you got stuck on a technical problem. How did you work through it?'
+Look for basic problem-solving instincts and willingness to ask for help."""
+must_cover = ["description of the problem", "steps taken to resolve", "outcome"]
+follow_ups = ["Did you ask anyone for help?", "What did you learn from the experience?"]
+
+[levels.junior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a junior-level candidate.
+Ask: 'Tell me about a time you faced a challenging bug or technical problem at work. Walk me through your debugging process and what you learned.'
+Look for structured thinking and learning orientation."""
+must_cover = ["specific situation", "debugging approach", "resolution", "learning applied later"]
+follow_ups = ["How did you narrow down the root cause?", "What would you do differently next time?"]
+
+[levels.mid]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a mid-level candidate.
+Ask: 'Tell me about a time you had to deliver a feature under significant time pressure or uncertainty. How did you manage scope, risk, and communication?'
+Look for project management instincts and stakeholder communication."""
+must_cover = ["situation and constraints", "scope management decisions", "communication with stakeholders", "outcome and reflection"]
+follow_ups = ["How did you decide what to cut?", "How did you keep your team or manager informed?"]
+
+[levels.senior]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a senior-level candidate.
+Ask: 'Tell me about a time you identified a significant technical risk or problem that others hadn't noticed. How did you raise it and what happened?'
+Look for proactive leadership and influence."""
+must_cover = ["how the risk was identified", "approach to raising concerns", "influence and persuasion", "outcome and organizational impact"]
+follow_ups = ["How did you get people to take it seriously?", "What would you have done if leadership disagreed?"]
+
+[levels.staff]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a staff-level candidate.
+Ask: 'Describe a time you drove a major technical initiative across multiple teams. How did you align people, manage dependencies, and ensure delivery?'
+Look for cross-team leadership and strategic execution."""
+must_cover = ["scope and scale of initiative", "alignment and consensus building", "dependency management", "dealing with resistance", "measurable outcome"]
+follow_ups = ["How did you handle teams that had competing priorities?", "What was the hardest tradeoff you had to make?"]
+
+[levels.principal]
+estimated_minutes = 10
+interviewer = """You are conducting a diagnostic assessment for a principal-level candidate.
+Ask: 'Tell me about a time you had to make a bet on a technical direction that had significant organizational consequences — a platform migration, a build-vs-buy decision, or a major architectural shift. How did you make the call and see it through?'
+Look for strategic thinking, risk tolerance, and organizational navigation."""
+must_cover = ["strategic context and stakes", "decision-making framework", "stakeholder management at exec level", "execution through uncertainty", "long-term impact assessment"]
+follow_ups = ["How did you know you were making the right call?", "What would have happened if you were wrong?"]
