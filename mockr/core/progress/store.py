@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sqlite3
 import uuid
 from datetime import UTC, datetime
@@ -38,6 +39,44 @@ class ProgressStore:
             CREATE TABLE IF NOT EXISTS dimension_stats (
                 dimension TEXT PRIMARY KEY, total_scores INTEGER DEFAULT 0,
                 avg_score REAL DEFAULT 0, trend TEXT
+            );
+            CREATE TABLE IF NOT EXISTS assessments (
+                id TEXT PRIMARY KEY,
+                target_level TEXT NOT NULL,
+                inferred_level TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                mode_scores TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS role_profiles (
+                id TEXT PRIMARY KEY,
+                company TEXT,
+                role_title TEXT NOT NULL,
+                inferred_level TEXT NOT NULL,
+                tech_stack TEXT,
+                domain TEXT,
+                key_skills TEXT,
+                interview_intel TEXT,
+                raw_text TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS practice_plans (
+                id TEXT PRIMARY KEY,
+                assessment_id TEXT REFERENCES assessments(id),
+                role_profile_id TEXT REFERENCES role_profiles(id),
+                target_level TEXT NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                updated_at TIMESTAMP NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS plan_items (
+                id TEXT PRIMARY KEY,
+                plan_id TEXT REFERENCES practice_plans(id),
+                dimension TEXT NOT NULL,
+                mode TEXT NOT NULL,
+                priority REAL NOT NULL,
+                gap_size REAL NOT NULL,
+                challenge_id TEXT,
+                rationale TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending'
             );
         """)
         self._conn.commit()
@@ -119,6 +158,94 @@ class ProgressStore:
     def get_all_challenge_stats(self) -> list[dict]:
         cursor = self._conn.execute("SELECT * FROM challenge_stats ORDER BY next_review ASC")
         return [dict(row) for row in cursor.fetchall()]
+
+    def save_assessment(
+        self, assessment_id: str, target_level: str, inferred_level: str, mode_scores: dict,
+    ) -> None:
+        self._conn.execute(
+            "INSERT INTO assessments (id, target_level, inferred_level, created_at, mode_scores) VALUES (?, ?, ?, ?, ?)",
+            (assessment_id, target_level, inferred_level, datetime.now(UTC).isoformat(), json.dumps(mode_scores)),
+        )
+        self._conn.commit()
+
+    def get_assessment(self, assessment_id: str) -> dict | None:
+        cursor = self._conn.execute("SELECT * FROM assessments WHERE id = ?", (assessment_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+    def save_role_profile(
+        self,
+        profile_id: str,
+        company: str | None,
+        role_title: str,
+        inferred_level: str,
+        tech_stack: list[str],
+        domain: str | None,
+        key_skills: list[dict],
+        interview_intel: dict | None,
+        raw_text: str,
+    ) -> None:
+        self._conn.execute(
+            "INSERT INTO role_profiles (id, company, role_title, inferred_level, tech_stack, domain, key_skills, interview_intel, raw_text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                profile_id, company, role_title, inferred_level,
+                json.dumps(tech_stack), domain, json.dumps(key_skills),
+                json.dumps(interview_intel) if interview_intel else None,
+                raw_text, datetime.now(UTC).isoformat(),
+            ),
+        )
+        self._conn.commit()
+
+    def get_role_profile(self, profile_id: str) -> dict | None:
+        cursor = self._conn.execute("SELECT * FROM role_profiles WHERE id = ?", (profile_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+    def list_role_profiles(self) -> list[dict]:
+        cursor = self._conn.execute("SELECT * FROM role_profiles ORDER BY created_at DESC")
+        return [dict(row) for row in cursor.fetchall()]
+
+    def save_practice_plan(
+        self, plan_id: str, assessment_id: str, role_profile_id: str | None, target_level: str,
+    ) -> None:
+        now = datetime.now(UTC).isoformat()
+        self._conn.execute(
+            "INSERT INTO practice_plans (id, assessment_id, role_profile_id, target_level, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (plan_id, assessment_id, role_profile_id, target_level, now, now),
+        )
+        self._conn.commit()
+
+    def get_practice_plan(self, plan_id: str) -> dict | None:
+        cursor = self._conn.execute("SELECT * FROM practice_plans WHERE id = ?", (plan_id,))
+        row = cursor.fetchone()
+        return dict(row) if row else None
+
+    def save_plan_item(
+        self,
+        item_id: str,
+        plan_id: str,
+        dimension: str,
+        mode: str,
+        priority: float,
+        gap_size: float,
+        challenge_id: str | None,
+        rationale: str,
+    ) -> None:
+        self._conn.execute(
+            "INSERT INTO plan_items (id, plan_id, dimension, mode, priority, gap_size, challenge_id, rationale) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (item_id, plan_id, dimension, mode, priority, gap_size, challenge_id, rationale),
+        )
+        self._conn.commit()
+
+    def get_plan_items(self, plan_id: str) -> list[dict]:
+        cursor = self._conn.execute(
+            "SELECT * FROM plan_items WHERE plan_id = ? ORDER BY priority DESC", (plan_id,)
+        )
+        return [dict(row) for row in cursor.fetchall()]
+
+    def update_plan_item_status(self, item_id: str, status: str) -> None:
+        self._conn.execute("UPDATE plan_items SET status = ? WHERE id = ?", (status, item_id))
+        self._conn.commit()
 
     def close(self) -> None:
         self._conn.close()
