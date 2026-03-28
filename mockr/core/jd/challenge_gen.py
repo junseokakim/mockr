@@ -63,7 +63,8 @@ class ChallengeGenerator:
             tech_stack=", ".join(tech_stack) if tech_stack else "general",
         )
         raw = await self._backend.generate(
-            [Message(role="user", content=prompt)], self._config,
+            [Message(role="user", content=prompt)],
+            self._config,
         )
         data = extract_json_object(raw)
 
@@ -93,15 +94,17 @@ class ChallengeGenerator:
         return challenge
 
     async def _quality_check(self, challenge: Challenge, target_level: str, skill_name: str) -> None:
-        challenge_json = json.dumps({
-            "id": challenge.id,
-            "title": challenge.title,
-            "mode": challenge.mode,
-            "levels": {
-                name: {"interviewer": lc.interviewer, "must_cover": lc.must_cover}
-                for name, lc in challenge.levels.items()
-            },
-        })
+        challenge_json = json.dumps(
+            {
+                "id": challenge.id,
+                "title": challenge.title,
+                "mode": challenge.mode,
+                "levels": {
+                    name: {"interviewer": lc.interviewer, "must_cover": lc.must_cover}
+                    for name, lc in challenge.levels.items()
+                },
+            }
+        )
         prompt = _QUALITY_CHECK_PROMPT.format(
             challenge_json=challenge_json,
             target_level=target_level,
@@ -109,7 +112,8 @@ class ChallengeGenerator:
         )
         try:
             await self._backend.generate(
-                [Message(role="user", content=prompt)], self._config,
+                [Message(role="user", content=prompt)],
+                self._config,
             )
         except Exception:  # noqa: BLE001
             pass

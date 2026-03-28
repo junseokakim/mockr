@@ -6,7 +6,7 @@ from pathlib import Path
 
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Static, TextArea
 
@@ -131,9 +131,7 @@ class AssessmentScreen(Screen):
         idx = self._current_mode_idx
         progress = self.query_one("#progress-bar", Static)
         dots = " ".join(
-            f"[bold $accent]{_MODES[i].upper()}[/]" if i == idx
-            else f"[dim]{_MODES[i]}[/]"
-            for i in range(len(_MODES))
+            f"[bold $accent]{_MODES[i].upper()}[/]" if i == idx else f"[dim]{_MODES[i]}[/]" for i in range(len(_MODES))
         )
         progress.update(f"Mode {idx + 1}/{len(_MODES)}: {dots}")
 
@@ -292,8 +290,13 @@ class AssessmentScreen(Screen):
         for i, item in enumerate(plan.items):
             store.save_plan_item(
                 f"item-{plan.id[:8]}-{i}",
-                plan.id, item.dimension, item.mode,
-                item.priority, item.gap_size, item.challenge_id, item.rationale,
+                plan.id,
+                item.dimension,
+                item.mode,
+                item.priority,
+                item.gap_size,
+                item.challenge_id,
+                item.rationale,
             )
         store.close()
 

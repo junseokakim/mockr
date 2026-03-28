@@ -11,12 +11,14 @@ from mockr.core.types import Message, ModelConfig
 
 class FakeIntelBackend:
     async def generate(self, messages: list[Message], config: ModelConfig) -> str:
-        return json.dumps({
-            "format": ["phone screen", "2x coding", "system design", "behavioral"],
-            "common_topics": ["API design", "concurrency", "system scalability"],
-            "culture_signals": ["Strong emphasis on communication"],
-            "gotchas": ["System design round is only 30 minutes"],
-        })
+        return json.dumps(
+            {
+                "format": ["phone screen", "2x coding", "system design", "behavioral"],
+                "common_topics": ["API design", "concurrency", "system scalability"],
+                "culture_signals": ["Strong emphasis on communication"],
+                "gotchas": ["System design round is only 30 minutes"],
+            }
+        )
 
 
 class FakeWebSearcher:

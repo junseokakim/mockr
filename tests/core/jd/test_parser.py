@@ -11,18 +11,30 @@ from mockr.core.types import Message, ModelConfig
 
 class FakeParserBackend:
     async def generate(self, messages: list[Message], config: ModelConfig) -> str:
-        return json.dumps({
-            "company": "Stripe",
-            "role_title": "Senior Backend Engineer",
-            "inferred_level": "senior",
-            "tech_stack": ["Python", "PostgreSQL", "Kubernetes"],
-            "domain": "fintech",
-            "key_skills": [
-                {"name": "distributed systems", "category": "system-design", "dimensions": ["structure", "reliability"], "weight": 0.9},
-                {"name": "Python", "category": "coding", "dimensions": ["correctness", "code_quality"], "weight": 0.8},
-                {"name": "leadership", "category": "behavioral", "dimensions": ["action", "impact"], "weight": 0.6},
-            ],
-        })
+        return json.dumps(
+            {
+                "company": "Stripe",
+                "role_title": "Senior Backend Engineer",
+                "inferred_level": "senior",
+                "tech_stack": ["Python", "PostgreSQL", "Kubernetes"],
+                "domain": "fintech",
+                "key_skills": [
+                    {
+                        "name": "distributed systems",
+                        "category": "system-design",
+                        "dimensions": ["structure", "reliability"],
+                        "weight": 0.9,
+                    },
+                    {
+                        "name": "Python",
+                        "category": "coding",
+                        "dimensions": ["correctness", "code_quality"],
+                        "weight": 0.8,
+                    },
+                    {"name": "leadership", "category": "behavioral", "dimensions": ["action", "impact"], "weight": 0.6},
+                ],
+            }
+        )
 
 
 @pytest.mark.asyncio
@@ -44,14 +56,16 @@ class TestJDParser:
     async def test_parse_jd_handles_missing_company(self) -> None:
         class NoCompanyBackend:
             async def generate(self, messages, config):
-                return json.dumps({
-                    "company": None,
-                    "role_title": "Software Engineer",
-                    "inferred_level": "mid",
-                    "tech_stack": [],
-                    "domain": None,
-                    "key_skills": [],
-                })
+                return json.dumps(
+                    {
+                        "company": None,
+                        "role_title": "Software Engineer",
+                        "inferred_level": "mid",
+                        "tech_stack": [],
+                        "domain": None,
+                        "key_skills": [],
+                    }
+                )
 
         parser = JDParser(backend=NoCompanyBackend(), config=ModelConfig(model="test"))
         profile = await parser.parse_text("Generic SWE role")

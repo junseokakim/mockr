@@ -47,10 +47,13 @@ class IntelGatherer:
         snippets = "\n".join(f"- [{r['url']}]: {r['snippet']}" for r in all_results)
 
         prompt = _INTEL_PROMPT.format(
-            company=company, role_title=role_title, search_results=snippets,
+            company=company,
+            role_title=role_title,
+            search_results=snippets,
         )
         raw = await self._backend.generate(
-            [Message(role="user", content=prompt)], self._config,
+            [Message(role="user", content=prompt)],
+            self._config,
         )
 
         try:

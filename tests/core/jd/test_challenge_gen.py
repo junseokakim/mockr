@@ -15,20 +15,22 @@ class FakeChallengeBackend:
         content = " ".join(m.content.lower() for m in messages)
         if "review" in content and "solvable" in content:
             return json.dumps({"pass": True, "reason": "Challenge is well-scoped"})
-        return json.dumps({
-            "id": "generated-k8s-networking",
-            "title": "Kubernetes Service Mesh Design",
-            "mode": "system-design",
-            "tags": ["kubernetes", "networking", "service-mesh"],
-            "levels": {
-                "senior": {
-                    "estimated_minutes": 15,
-                    "interviewer": "Design a service mesh for Kubernetes...",
-                    "must_cover": ["sidecar proxy", "service discovery", "load balancing"],
-                    "follow_ups": ["How do you handle mTLS?"],
-                }
-            },
-        })
+        return json.dumps(
+            {
+                "id": "generated-k8s-networking",
+                "title": "Kubernetes Service Mesh Design",
+                "mode": "system-design",
+                "tags": ["kubernetes", "networking", "service-mesh"],
+                "levels": {
+                    "senior": {
+                        "estimated_minutes": 15,
+                        "interviewer": "Design a service mesh for Kubernetes...",
+                        "must_cover": ["sidecar proxy", "service discovery", "load balancing"],
+                        "follow_ups": ["How do you handle mTLS?"],
+                    }
+                },
+            }
+        )
 
 
 @pytest.mark.asyncio

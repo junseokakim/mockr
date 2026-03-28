@@ -6,7 +6,7 @@ from pathlib import Path
 
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Header, Static, TextArea
 
@@ -187,8 +187,6 @@ class PrepScreen(Screen):
         if self._profile is None:
             return
 
-        import json
-
         from mockr.core.progress.store import ProgressStore
 
         profile = self._profile
@@ -215,7 +213,7 @@ class PrepScreen(Screen):
         store.close()
 
         status = self.query_one("#prep-status", Static)
-        status.update(f"[bold $success]Profile saved! Run an assessment to generate a practice plan.[/bold $success]")
+        status.update("[bold $success]Profile saved! Run an assessment to generate a practice plan.[/bold $success]")
 
     def action_go_back(self) -> None:
         self.app.pop_screen()

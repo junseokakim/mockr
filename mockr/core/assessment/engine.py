@@ -66,7 +66,8 @@ class AssessmentEngine:
                 turn_number=1,
             )
             score_raw = await self._backend.generate(
-                [Message(role="user", content=score_prompt)], self._config,
+                [Message(role="user", content=score_prompt)],
+                self._config,
             )
             score_result = self._scorer.parse_score_response(score_raw, mode=mode_str)
             mode_scores[mode_str] = score_result.dimensions

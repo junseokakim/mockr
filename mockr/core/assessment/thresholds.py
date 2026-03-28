@@ -16,10 +16,7 @@ _IC_LEVELS = [
 ]
 
 LEVEL_THRESHOLDS: dict[str, dict[str, dict[str, float]]] = {
-    level.value: {
-        mode: {dim: threshold for dim in dims}
-        for mode, dims in DIMENSIONS_BY_MODE.items()
-    }
+    level.value: {mode: {dim: threshold for dim in dims} for mode, dims in DIMENSIONS_BY_MODE.items()}
     for level, threshold in _IC_LEVELS
 }
 

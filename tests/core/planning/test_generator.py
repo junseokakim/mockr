@@ -15,7 +15,13 @@ class TestPlanGenerator:
             target_level="senior",
             inferred_level="mid",
             mode_scores={
-                "coding": {"correctness": 2.0, "efficiency": 3.0, "code_quality": 3.5, "edge_cases": 2.5, "communication": 3.5},
+                "coding": {
+                    "correctness": 2.0,
+                    "efficiency": 3.0,
+                    "code_quality": 3.5,
+                    "edge_cases": 2.5,
+                    "communication": 3.5,
+                },
             },
             gaps=[
                 Gap(dimension="correctness", mode="coding", current_score=2.0, target_score=3.5, gap_size=1.5),

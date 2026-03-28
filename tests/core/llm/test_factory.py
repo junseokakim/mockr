@@ -4,7 +4,6 @@ from mockr.config import MockrConfig
 from mockr.core.llm.backend import LLMBackend
 from mockr.core.llm.factory import build_backend
 from mockr.core.llm.fake_backend import FakeLLMBackend
-from mockr.core.types import ModelConfig
 
 
 class TestBuildBackend:

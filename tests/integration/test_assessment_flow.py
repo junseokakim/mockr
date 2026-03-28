@@ -15,7 +15,6 @@ from mockr.core.planning.generator import PlanGenerator
 from mockr.core.progress.store import ProgressStore
 from mockr.core.types import Message, ModelConfig
 
-
 _DIAGNOSTIC_SCORES: dict[str, dict[str, float]] = {
     "coding": {"correctness": 2.0, "efficiency": 3.0, "code_quality": 3.5, "edge_cases": 2.5, "communication": 3.5},
     "system-design": {"structure": 3.0, "constraints": 2.5, "tradeoffs": 2.0, "reliability": 2.0, "concreteness": 3.0},
@@ -38,16 +37,23 @@ class FakeBackend:
             first = next(iter(self._scores.values()))
             return json.dumps({"dimensions": first, "strengths": [], "improvements": []})
         elif "extracting structured information" in content:
-            return json.dumps({
-                "company": "TestCorp",
-                "role_title": "Senior Engineer",
-                "inferred_level": "senior",
-                "tech_stack": ["Python"],
-                "domain": "testing",
-                "key_skills": [
-                    {"name": "system design", "category": "system-design", "dimensions": ["tradeoffs"], "weight": 0.9},
-                ],
-            })
+            return json.dumps(
+                {
+                    "company": "TestCorp",
+                    "role_title": "Senior Engineer",
+                    "inferred_level": "senior",
+                    "tech_stack": ["Python"],
+                    "domain": "testing",
+                    "key_skills": [
+                        {
+                            "name": "system design",
+                            "category": "system-design",
+                            "dimensions": ["tradeoffs"],
+                            "weight": 0.9,
+                        },
+                    ],
+                }
+            )
         elif "debrief" in content:
             return json.dumps({"overall_score": 3.0, "dimension_scores": {}, "summary": "Done."})
         else:
@@ -62,7 +68,9 @@ class TestAssessmentFlow:
         config = ModelConfig(model="test")
 
         engine = AssessmentEngine(
-            backend=backend, config=config, challenges_dir=Path("mockr/challenges/diagnostic"),
+            backend=backend,
+            config=config,
+            challenges_dir=Path("mockr/challenges/diagnostic"),
         )
 
         async def fake_answer(q: str, mode: str) -> str:
@@ -81,14 +89,35 @@ class TestAssessmentFlow:
         store.save_assessment(result.id, result.target_level, result.inferred_level, result.mode_scores)
         store.save_practice_plan(plan.id, result.id, None, plan.target_level)
         for i, item in enumerate(plan.items):
-            store.save_plan_item(f"item-{i}", plan.id, item.dimension, item.mode, item.priority, item.gap_size, item.challenge_id, item.rationale)
+            store.save_plan_item(
+                f"item-{i}",
+                plan.id,
+                item.dimension,
+                item.mode,
+                item.priority,
+                item.gap_size,
+                item.challenge_id,
+                item.rationale,
+            )
 
         assert store.get_assessment(result.id) is not None
         assert len(store.get_plan_items(plan.id)) == len(plan.items)
 
         improved_scores = {
-            "coding": {"correctness": 4.0, "efficiency": 3.5, "code_quality": 3.5, "edge_cases": 3.5, "communication": 3.5},
-            "system-design": {"structure": 3.5, "constraints": 3.5, "tradeoffs": 3.5, "reliability": 3.5, "concreteness": 3.5},
+            "coding": {
+                "correctness": 4.0,
+                "efficiency": 3.5,
+                "code_quality": 3.5,
+                "edge_cases": 3.5,
+                "communication": 3.5,
+            },
+            "system-design": {
+                "structure": 3.5,
+                "constraints": 3.5,
+                "tradeoffs": 3.5,
+                "reliability": 3.5,
+                "concreteness": 3.5,
+            },
             "behavioral": {"situation": 4.0, "task": 3.5, "action": 3.5, "result": 3.5, "impact": 3.5},
         }
         adapter = PlanAdapter()
@@ -103,7 +132,9 @@ class TestAssessmentFlow:
         config = ModelConfig(model="test")
 
         engine = AssessmentEngine(
-            backend=backend, config=config, challenges_dir=Path("mockr/challenges/diagnostic"),
+            backend=backend,
+            config=config,
+            challenges_dir=Path("mockr/challenges/diagnostic"),
         )
 
         async def fake_answer(q: str, mode: str) -> str:

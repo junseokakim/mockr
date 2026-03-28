@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from mockr.core.assessment.models import AssessmentResult, Gap
 from mockr.core.assessment.thresholds import (
     LEVEL_THRESHOLDS,
     detect_gaps,
@@ -28,7 +27,13 @@ class TestLevelThresholds:
 class TestDetectGaps:
     def test_detects_gap_below_threshold(self) -> None:
         mode_scores = {
-            "coding": {"correctness": 2.0, "efficiency": 3.0, "code_quality": 3.0, "edge_cases": 2.5, "communication": 3.5},
+            "coding": {
+                "correctness": 2.0,
+                "efficiency": 3.0,
+                "code_quality": 3.0,
+                "edge_cases": 2.5,
+                "communication": 3.5,
+            },
         }
         gaps = detect_gaps(mode_scores, target_level="senior")
         gap_dims = [g.dimension for g in gaps]
@@ -36,7 +41,13 @@ class TestDetectGaps:
 
     def test_no_gap_when_above_threshold(self) -> None:
         mode_scores = {
-            "coding": {"correctness": 5.0, "efficiency": 5.0, "code_quality": 5.0, "edge_cases": 5.0, "communication": 5.0},
+            "coding": {
+                "correctness": 5.0,
+                "efficiency": 5.0,
+                "code_quality": 5.0,
+                "edge_cases": 5.0,
+                "communication": 5.0,
+            },
         }
         gaps = detect_gaps(mode_scores, target_level="senior")
         coding_gaps = [g for g in gaps if g.mode == "coding"]
@@ -44,7 +55,13 @@ class TestDetectGaps:
 
     def test_gap_includes_size(self) -> None:
         mode_scores = {
-            "coding": {"correctness": 2.0, "efficiency": 4.0, "code_quality": 4.0, "edge_cases": 4.0, "communication": 4.0},
+            "coding": {
+                "correctness": 2.0,
+                "efficiency": 4.0,
+                "code_quality": 4.0,
+                "edge_cases": 4.0,
+                "communication": 4.0,
+            },
         }
         gaps = detect_gaps(mode_scores, target_level="senior")
         correctness_gap = next(g for g in gaps if g.dimension == "correctness")
@@ -54,8 +71,20 @@ class TestDetectGaps:
 class TestInferLevel:
     def test_infer_level_from_high_scores(self) -> None:
         mode_scores = {
-            "coding": {"correctness": 4.5, "efficiency": 4.5, "code_quality": 4.5, "edge_cases": 4.5, "communication": 4.5},
-            "system-design": {"structure": 4.5, "constraints": 4.5, "tradeoffs": 4.5, "reliability": 4.5, "concreteness": 4.5},
+            "coding": {
+                "correctness": 4.5,
+                "efficiency": 4.5,
+                "code_quality": 4.5,
+                "edge_cases": 4.5,
+                "communication": 4.5,
+            },
+            "system-design": {
+                "structure": 4.5,
+                "constraints": 4.5,
+                "tradeoffs": 4.5,
+                "reliability": 4.5,
+                "concreteness": 4.5,
+            },
             "behavioral": {"situation": 4.5, "task": 4.5, "action": 4.5, "result": 4.5, "impact": 4.5},
         }
         level = infer_level(mode_scores)
@@ -63,8 +92,20 @@ class TestInferLevel:
 
     def test_infer_level_from_low_scores(self) -> None:
         mode_scores = {
-            "coding": {"correctness": 1.5, "efficiency": 1.5, "code_quality": 1.5, "edge_cases": 1.5, "communication": 1.5},
-            "system-design": {"structure": 1.5, "constraints": 1.5, "tradeoffs": 1.5, "reliability": 1.5, "concreteness": 1.5},
+            "coding": {
+                "correctness": 1.5,
+                "efficiency": 1.5,
+                "code_quality": 1.5,
+                "edge_cases": 1.5,
+                "communication": 1.5,
+            },
+            "system-design": {
+                "structure": 1.5,
+                "constraints": 1.5,
+                "tradeoffs": 1.5,
+                "reliability": 1.5,
+                "concreteness": 1.5,
+            },
             "behavioral": {"situation": 1.5, "task": 1.5, "action": 1.5, "result": 1.5, "impact": 1.5},
         }
         level = infer_level(mode_scores)

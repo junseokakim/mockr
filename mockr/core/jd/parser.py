@@ -39,7 +39,8 @@ class JDParser:
     async def parse_text(self, jd_text: str) -> RoleProfile:
         prompt = _JD_EXTRACTION_PROMPT.format(jd_text=jd_text)
         raw = await self._backend.generate(
-            [Message(role="user", content=prompt)], self._config,
+            [Message(role="user", content=prompt)],
+            self._config,
         )
         data = extract_json_object(raw)
 

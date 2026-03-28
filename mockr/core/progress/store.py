@@ -160,7 +160,11 @@ class ProgressStore:
         return [dict(row) for row in cursor.fetchall()]
 
     def save_assessment(
-        self, assessment_id: str, target_level: str, inferred_level: str, mode_scores: dict,
+        self,
+        assessment_id: str,
+        target_level: str,
+        inferred_level: str,
+        mode_scores: dict,
     ) -> None:
         self._conn.execute(
             "INSERT INTO assessments (id, target_level, inferred_level, created_at, mode_scores) VALUES (?, ?, ?, ?, ?)",
@@ -188,10 +192,16 @@ class ProgressStore:
         self._conn.execute(
             "INSERT INTO role_profiles (id, company, role_title, inferred_level, tech_stack, domain, key_skills, interview_intel, raw_text, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
-                profile_id, company, role_title, inferred_level,
-                json.dumps(tech_stack), domain, json.dumps(key_skills),
+                profile_id,
+                company,
+                role_title,
+                inferred_level,
+                json.dumps(tech_stack),
+                domain,
+                json.dumps(key_skills),
                 json.dumps(interview_intel) if interview_intel else None,
-                raw_text, datetime.now(UTC).isoformat(),
+                raw_text,
+                datetime.now(UTC).isoformat(),
             ),
         )
         self._conn.commit()
@@ -206,7 +216,11 @@ class ProgressStore:
         return [dict(row) for row in cursor.fetchall()]
 
     def save_practice_plan(
-        self, plan_id: str, assessment_id: str, role_profile_id: str | None, target_level: str,
+        self,
+        plan_id: str,
+        assessment_id: str,
+        role_profile_id: str | None,
+        target_level: str,
     ) -> None:
         now = datetime.now(UTC).isoformat()
         self._conn.execute(
@@ -221,9 +235,7 @@ class ProgressStore:
         return dict(row) if row else None
 
     def get_latest_practice_plan(self) -> dict | None:
-        cursor = self._conn.execute(
-            "SELECT * FROM practice_plans ORDER BY created_at DESC LIMIT 1"
-        )
+        cursor = self._conn.execute("SELECT * FROM practice_plans ORDER BY created_at DESC LIMIT 1")
         row = cursor.fetchone()
         return dict(row) if row else None
 
@@ -245,9 +257,7 @@ class ProgressStore:
         self._conn.commit()
 
     def get_plan_items(self, plan_id: str) -> list[dict]:
-        cursor = self._conn.execute(
-            "SELECT * FROM plan_items WHERE plan_id = ? ORDER BY priority DESC", (plan_id,)
-        )
+        cursor = self._conn.execute("SELECT * FROM plan_items WHERE plan_id = ? ORDER BY priority DESC", (plan_id,))
         return [dict(row) for row in cursor.fetchall()]
 
     def update_plan_item_status(self, item_id: str, status: str) -> None:
