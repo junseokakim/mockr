@@ -34,6 +34,8 @@ _MODE_OPTIONS = [
 ]
 
 _LEVEL_OPTIONS = [
+    ("Intern", Level.INTERN),
+    ("Junior", Level.JUNIOR),
     ("Mid", Level.MID),
     ("Senior", Level.SENIOR),
     ("Staff", Level.STAFF),

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from mockr.core.progress.store import ProgressStore
@@ -64,3 +65,93 @@ class TestProgressStore:
         session = store.get_session("s1")
         assert session["state"] == "paused"
         assert session["suspended_state"] == '{"turn": 3}'
+
+
+class TestAssessmentPersistence:
+    def test_new_tables_created(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        tables = store.list_tables()
+        assert "assessments" in tables
+        assert "role_profiles" in tables
+        assert "practice_plans" in tables
+        assert "plan_items" in tables
+
+    def test_save_and_get_assessment(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        mode_scores = {"coding": {"correctness": 3.5, "efficiency": 2.0}}
+        store.save_assessment(
+            assessment_id="a1",
+            target_level="senior",
+            inferred_level="mid",
+            mode_scores=mode_scores,
+        )
+        result = store.get_assessment("a1")
+        assert result is not None
+        assert result["target_level"] == "senior"
+        assert json.loads(result["mode_scores"]) == mode_scores
+
+    def test_save_and_get_role_profile(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        skills = [{"name": "Python", "category": "coding", "dimensions": ["correctness"], "weight": 0.9}]
+        store.save_role_profile(
+            profile_id="rp1",
+            company="Stripe",
+            role_title="Senior Backend Engineer",
+            inferred_level="senior",
+            tech_stack=["Python", "PostgreSQL"],
+            domain="fintech",
+            key_skills=skills,
+            interview_intel=None,
+            raw_text="We are looking for...",
+        )
+        result = store.get_role_profile("rp1")
+        assert result is not None
+        assert result["company"] == "Stripe"
+        assert json.loads(result["tech_stack"]) == ["Python", "PostgreSQL"]
+
+    def test_list_role_profiles(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        store.save_role_profile("rp1", "Stripe", "SWE", "senior", [], None, [], None, "text1")
+        store.save_role_profile("rp2", "Google", "SRE", "staff", [], None, [], None, "text2")
+        profiles = store.list_role_profiles()
+        assert len(profiles) == 2
+
+    def test_save_and_get_practice_plan(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        store.save_assessment("a1", "senior", "mid", {"coding": {"correctness": 2.0}})
+        store.save_practice_plan(
+            plan_id="p1",
+            assessment_id="a1",
+            role_profile_id=None,
+            target_level="senior",
+        )
+        plan = store.get_practice_plan("p1")
+        assert plan is not None
+        assert plan["target_level"] == "senior"
+
+    def test_save_and_get_plan_items(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        store.save_assessment("a1", "senior", "mid", {})
+        store.save_practice_plan("p1", "a1", None, "senior")
+        store.save_plan_item(
+            item_id="i1",
+            plan_id="p1",
+            dimension="correctness",
+            mode="coding",
+            priority=0.8,
+            gap_size=1.5,
+            challenge_id=None,
+            rationale="Score 2.0, need 3.5",
+        )
+        items = store.get_plan_items("p1")
+        assert len(items) == 1
+        assert items[0]["priority"] == 0.8
+
+    def test_update_plan_item_status(self, tmp_path: Path) -> None:
+        store = ProgressStore(tmp_path / "test.db")
+        store.save_assessment("a1", "senior", "mid", {})
+        store.save_practice_plan("p1", "a1", None, "senior")
+        store.save_plan_item("i1", "p1", "correctness", "coding", 0.8, 1.5, None, "reason")
+        store.update_plan_item_status("i1", "validated")
+        items = store.get_plan_items("p1")
+        assert items[0]["status"] == "validated"

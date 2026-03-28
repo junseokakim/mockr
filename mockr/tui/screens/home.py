@@ -24,6 +24,8 @@ class HomeScreen(Screen):
     BINDINGS = [
         Binding("n", "new_session", "New Session"),
         Binding("p", "practice", "Practice"),
+        Binding("a", "assessment", "Assessment"),
+        Binding("j", "prep", "Prep for Role"),
         Binding("d", "dashboard", "Dashboard"),
         Binding("q", "app.quit", "Quit"),
     ]
@@ -79,6 +81,8 @@ class HomeScreen(Screen):
             with Vertical(id="home-buttons"):
                 yield Button("  New Session  [N]", id="btn-new", variant="primary")
                 yield Button("  Practice — Due Reviews  [P]", id="btn-practice", variant="default")
+                yield Button("  Take Assessment  [A]", id="btn-assess", variant="default")
+                yield Button("  Prep for Role  [J]", id="btn-prep", variant="default")
                 yield Button("  Dashboard  [D]", id="btn-dashboard", variant="default")
                 yield Button("  Quit  [Q]", id="btn-quit", variant="error")
             yield Static("mockr v0.1.0", id="version-label")
@@ -90,6 +94,10 @@ class HomeScreen(Screen):
                 self.action_new_session()
             case "btn-practice":
                 self.action_practice()
+            case "btn-assess":
+                self.action_assessment()
+            case "btn-prep":
+                self.action_prep()
             case "btn-dashboard":
                 self.action_dashboard()
             case "btn-quit":
@@ -105,6 +113,16 @@ class HomeScreen(Screen):
 
         # Launch setup in practice mode (pre-selected due reviews)
         self.app.push_screen(SetupScreen(practice_mode=True))
+
+    def action_assessment(self) -> None:
+        from mockr.tui.screens.assessment import AssessmentScreen
+
+        self.app.push_screen(AssessmentScreen())
+
+    def action_prep(self) -> None:
+        from mockr.tui.screens.prep import PrepScreen
+
+        self.app.push_screen(PrepScreen())
 
     def action_dashboard(self) -> None:
         from mockr.tui.screens.dashboard import DashboardScreen

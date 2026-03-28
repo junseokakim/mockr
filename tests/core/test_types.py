@@ -52,3 +52,20 @@ class TestEnums:
         assert Mode.CODING.value == "coding"
         assert Mode.BEHAVIORAL.value == "behavioral"
         assert Mode.FULL_LOOP.value == "full-loop"
+
+
+class TestLevelExpansion:
+    def test_intern_level_exists(self) -> None:
+        assert Level.INTERN.value == "intern"
+
+    def test_junior_level_exists(self) -> None:
+        assert Level.JUNIOR.value == "junior"
+
+    def test_all_ic_levels_ordered(self) -> None:
+        ic_levels = [Level.INTERN, Level.JUNIOR, Level.MID, Level.SENIOR, Level.STAFF, Level.PRINCIPAL]
+        assert len(ic_levels) == 6
+
+    def test_management_placeholder_exists(self) -> None:
+        assert Level.ENGINEERING_MANAGER.value == "engineering_manager"
+        assert Level.DIRECTOR.value == "director"
+        assert Level.VP.value == "vp"
